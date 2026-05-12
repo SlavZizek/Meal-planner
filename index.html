@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Meal Planner">
+<title>Our Meal Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FAF8F3;
+  --cream-dark: #F2EFE8;
+  --cream-darker: #E8E4D8;
+  --ink: #1C1917;
+  --ink-mid: #57534E;
+  --ink-light: #A8A29E;
+  --green: #2D5016;
+  --green-mid: #4A7C1F;
+  --green-light: #EBF3E0;
+  --green-border: #C4DBA0;
+  --terracotta: #B5451B;
+  --terracotta-light: #FAE8E0;
+  --terracotta-border: #F0B89A;
+  --gold: #92400E;
+  --gold-light: #FEF3C7;
+  --gold-border: #FCD34D;
+  --border: #DDD8D0;
+  --border-mid: #C9C3B8;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --tab-h: 64px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  overscroll-behavior: none;
+}
+
+/* ── Header ── */
+.app-header {
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 20px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.app-header h1 {
+  font-family: 'Lora', serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.app-header p {
+  font-size: 13px;
+  color: var(--ink-light);
+  margin-top: 2px;
+}
+
+/* ── Tab bar ── */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: var(--cream);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding-bottom: var(--safe-bottom);
+  z-index: 100;
+}
+.tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ink-light);
+  font-size: 11px;
+  font-weight: 400;
+  min-height: var(--tab-h);
+  transition: color .15s;
+}
+.tab-btn.active { color: var(--green); }
+.tab-btn svg { width: 22px; height: 22px; stroke-width: 1.5; }
+.tab-btn span { letter-spacing: .02em; }
+
+/* ── Main scroll area ── */
+.main {
+  padding: 16px 16px calc(var(--tab-h) + var(--safe-bottom) + 16px);
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+/* ── Day cards ── */
+.day-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 0;
+}
+.day-name {
+  font-family: 'Lora', serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.batch-pill {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: var(--gold-light);
+  border: 1px solid var(--gold-border);
+  padding: 3px 8px;
+  border-radius: 100px;
+}
+
+.lunch-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 10px 16px;
+}
+.lunch-cell {
+  background: var(--cream);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+.cell-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 3px;
+}
+.cell-val {
+  font-size: 12px;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.cell-val.away { color: var(--ink-light); font-style: italic; }
+
+.dinner-section {
+  border-top: 1px solid var(--border);
+  padding: 12px 16px 14px;
+}
+.dinner-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.dinner-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.3;
+  flex: 1;
+}
+.dinner-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.src-badge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 100px;
+  text-decoration: none;
+  white-space: nowrap;
+  letter-spacing: .02em;
+}
+.src-meera      { background: var(--green-light);       color: var(--green);       border: 1px solid var(--green-border); }
+.src-nyt        { background: #EFF6FF;                  color: #1D4ED8;            border: 1px solid #BFDBFE; }
+.src-minimalist { background: var(--gold-light);        color: var(--gold);        border: 1px solid var(--gold-border); }
+.src-lck        { background: var(--terracotta-light);  color: var(--terracotta);  border: 1px solid var(--terracotta-border); }
+.src-rpl        { background: #F5F3FF;                  color: #6D28D9;            border: 1px solid #DDD6FE; }
+.src-other      { background: var(--cream-dark);        color: var(--ink-mid);     border: 1px solid var(--border); }
+.vegan-sub-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 500; color: var(--gold);
+  background: var(--gold-light); border: 1px solid var(--gold-border);
+  border-radius: 100px; padding: 3px 9px; margin-top: 6px; line-height: 1.4;
+}
+
+.swap-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 1px solid var(--border-mid);
+  border-radius: 100px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-mid);
+  min-height: 28px;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.swap-btn:active { background: var(--cream-dark); transform: scale(.97); }
+.swap-btn svg { width: 13px; height: 13px; stroke-width: 2; }
+.swap-btn:disabled { opacity: .4; }
+
+.dinner-note {
+  font-size: 12px;
+  color: var(--ink-mid);
+  line-height: 1.5;
+}
+.prot-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--green-mid);
+  margin-left: 4px;
+}
+
+/* ── Swap panel ── */
+.swap-panel {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-mid);
+}
+.loading-text {
+  font-size: 13px;
+  color: var(--ink-light);
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.alt-card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.alt-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.alt-name { font-size: 13px; font-weight: 500; color: var(--ink); line-height: 1.3; }
+.alt-note { font-size: 12px; color: var(--ink-mid); line-height: 1.4; margin-bottom: 8px; }
+.use-btn {
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 32px;
+  transition: opacity .15s;
+}
+.use-btn:active { opacity: .8; transform: scale(.97); }
+.cancel-link {
+  background: none; border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; color: var(--ink-light); text-decoration: underline;
+  display: block; margin-top: 6px; padding: 4px 0;
+}
+.err-text { font-size: 13px; color: var(--terracotta); }
+
+/* ── Info bar ── */
+.info-bar {
+  background: var(--green-light);
+  border: 1px solid var(--green-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--green);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+/* ── Grocery list ── */
+.section-title {
+  font-family: 'Lora', serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 4px;
+  margin-top: 4px;
+}
+.section-sub {
+  font-size: 12px;
+  color: var(--ink-light);
+  margin-bottom: 12px;
+}
+.budget-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.budget-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  text-align: center;
+}
+.budget-label { font-size: 10px; color: var(--ink-light); font-weight: 500; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 4px; }
+.budget-val { font-size: 16px; font-weight: 500; color: var(--ink); font-family: 'Lora', serif; }
+
+.shop-tip {
+  font-size: 13px; color: var(--ink-mid); line-height: 1.6;
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px 14px;
+  margin-bottom: 20px;
+}
+
+.shop-group { margin-bottom: 16px; }
+.shop-group-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 6px;
+}
+.shop-group-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.shop-group-est { font-size: 12px; color: var(--ink-light); }
+.shop-list {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.shop-item {
+  display: flex; align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--cream-dark);
+  gap: 10px;
+  cursor: pointer;
+  transition: background .1s;
+  -webkit-user-select: none;
+}
+.shop-item:last-child { border-bottom: none; }
+.shop-item:active { background: var(--cream); }
+.shop-check {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid var(--border-mid);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.shop-item.checked .shop-check {
+  background: var(--green); border-color: var(--green);
+}
+.shop-item.checked .shop-check::after {
+  content: ''; display: block;
+  width: 5px; height: 9px;
+  border: 2px solid white; border-top: none; border-left: none;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+.shop-item-info { flex: 1; }
+.shop-item-name {
+  font-size: 13px; color: var(--ink); line-height: 1.3;
+  transition: color .15s;
+}
+.shop-item.checked .shop-item-name { color: var(--ink-light); text-decoration: line-through; }
+.shop-item-where { font-size: 11px; color: var(--ink-light); margin-top: 1px; }
+.shop-item-price { font-size: 12px; color: var(--ink-mid); flex-shrink: 0; }
+.shop-item-note { font-size: 11px; color: var(--ink-light); font-style: italic; }
+.shop-group.muted .shop-group-name { color: var(--ink-light); }
+.shop-group.muted .shop-list { opacity: .65; }
+.shop-group.muted .shop-item { cursor: default; }
+.clear-btn {
+  background: none; border: 1px solid var(--border-mid);
+  border-radius: 100px; padding: 5px 14px;
+  font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--ink-mid);
+  cursor: pointer; min-height: 32px; margin-bottom: 16px;
+}
+
+/* ── Batch cooking ── */
+.batch-block { margin-bottom: 24px; }
+.batch-day-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 12px;
+}
+.batch-day-name {
+  font-family: 'Lora', serif; font-size: 18px; font-weight: 500; color: var(--ink);
+}
+.batch-day-meta { font-size: 12px; color: var(--ink-light); }
+.batch-task {
+  display: flex; gap: 12px; margin-bottom: 10px;
+}
+.batch-num {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--green-light); border: 1px solid var(--green-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 500; color: var(--green);
+  margin-top: 1px;
+}
+.batch-card {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 14px; flex: 1;
+}
+.batch-task-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.batch-task-name { font-size: 14px; font-weight: 500; color: var(--ink); }
+.batch-task-time { font-size: 11px; color: var(--ink-light); }
+.batch-task-desc { font-size: 12px; color: var(--ink-mid); line-height: 1.5; }
+
+/* ── Legend ── */
+.legend { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 16px; margin-bottom: 4px; }
+
+
+
+/* ── Settings modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.4);
+  z-index: 200; display: flex; align-items: flex-end;
+  animation: fadeOverlay .15s ease;
+}
+@keyframes fadeOverlay { from { opacity:0; } to { opacity:1; } }
+.modal-sheet {
+  background: var(--cream); border-radius: 20px 20px 0 0;
+  width: 100%; padding: 20px 20px calc(var(--safe-bottom) + 20px);
+  animation: slideUp .2s ease;
+}
+@keyframes slideUp { from { transform: translateY(60px); opacity:0; } to { transform: none; opacity:1; } }
+.modal-title { font-family: 'Lora', serif; font-size: 18px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+.modal-sub { font-size: 13px; color: var(--ink-mid); margin-bottom: 16px; line-height: 1.5; }
+.modal-label { font-size: 11px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-light); margin-bottom: 6px; }
+.modal-input {
+  width: 100%; background: white; border: 1px solid var(--border-mid);
+  border-radius: var(--radius-sm); padding: 10px 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink);
+  margin-bottom: 12px; -webkit-appearance: none;
+}
+.modal-input:focus { outline: none; border-color: var(--green); }
+.modal-row { display: flex; gap: 8px; }
+.modal-btn {
+  flex: 1; padding: 12px; border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; border: none; min-height: 48px;
+}
+.modal-btn.primary { background: var(--green); color: white; }
+.modal-btn.secondary { background: var(--cream-dark); color: var(--ink-mid); border: 1px solid var(--border); }
+.modal-key-status {
+  font-size: 12px; padding: 6px 10px; border-radius: var(--radius-sm);
+  margin-bottom: 12px; line-height: 1.4;
+}
+.modal-key-status.ok { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
+.modal-key-status.missing { background: var(--gold-light); color: var(--gold); border: 1px solid var(--gold-border); }
+/* ── Header gear icon ── */
+.header-gear {
+  background: none; border: none; cursor: pointer; padding: 4px;
+  color: var(--ink-light); display: flex; align-items: center;
+}
+.header-gear svg { width: 20px; height: 20px; }
+/* ── Recipe link button ── */
+.recipe-link-btn {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: none; border: none; cursor: pointer; padding: 0;
+  font-family: 'DM Sans', sans-serif; font-size: 12px;
+  color: var(--ink-light); text-decoration: none;
+  min-height: 28px;
+}
+.recipe-link-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+.recipe-link-btn:active { opacity: .6; }
+/* ── Share/export button ── */
+.share-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: white; border: 1px solid var(--border-mid);
+  border-radius: 100px; padding: 7px 16px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--ink-mid); margin-bottom: 16px;
+}
+.share-btn svg { width: 15px; height: 15px; }
+.share-btn:active { background: var(--cream-dark); }
+/* ── Price update feature ── */
+.price-check-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  margin-bottom: 16px; gap: 10px;
+}
+.price-check-bar.stale { border-color: var(--gold-border); background: var(--gold-light); }
+.price-check-bar.stale .price-check-label { color: var(--gold); }
+.price-check-label { font-size: 12px; color: var(--ink-mid); flex: 1; line-height: 1.4; }
+.price-check-label strong { color: var(--ink); }
+.price-update-btn {
+  background: var(--green); color: white; border: none;
+  border-radius: 100px; padding: 7px 14px; cursor: pointer;
+  font-family: var(--font-sans, sans-serif); font-size: 12px; font-weight: 500;
+  white-space: nowrap; min-height: 34px; flex-shrink: 0;
+  transition: opacity .15s;
+}
+.price-update-btn:active { opacity: .8; }
+.price-update-btn:disabled { opacity: .5; cursor: default; }
+.price-update-btn.loading { background: var(--ink-light); }
+.price-change-log {
+  background: white; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  margin-bottom: 16px; font-size: 13px;
+}
+.price-change-log-title { font-weight: 500; color: var(--ink); margin-bottom: 8px; font-size: 13px; }
+.price-change-row { display: flex; align-items: baseline; gap: 6px; padding: 3px 0; font-size: 12px; }
+.price-change-name { color: var(--ink-mid); flex: 1; }
+.price-change-old { color: var(--ink-light); text-decoration: line-through; }
+.price-change-new.up { color: var(--terracotta); font-weight: 500; }
+.price-change-new.down { color: var(--green-mid); font-weight: 500; }
+.price-change-new.same { color: var(--ink-light); }
+.shop-item-price.changed-up { color: var(--terracotta); font-weight: 500; }
+.shop-item-price.changed-down { color: var(--green-mid); font-weight: 500; }
+.price-err { font-size: 13px; color: var(--terracotta); padding: 8px 0; }
+/* ── Transitions ── */
+.tab-content { animation: fadein .2s ease; }
+@keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+<div class="app-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+  <div>
+    <h1>Our Meal Planner</h1>
+    <p>Vegan · Amsterdam · Week at a glance</p>
+  </div>
+  <button class="header-gear" onclick="openSettings()" aria-label="Settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  </button>
+</div>
+<div id="settings-modal" style="display:none"></div>
+
+<div class="main" id="main"></div>
+
+<nav class="tab-bar" id="tab-bar">
+  <button class="tab-btn active" data-tab="plan" onclick="setTab('plan')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    <span>Plan</span>
+  </button>
+  <button class="tab-btn" data-tab="shopping" onclick="setTab('shopping')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span>Groceries</span>
+  </button>
+  <button class="tab-btn" data-tab="batch" onclick="setTab('batch')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+    <span>Batch cook</span>
+  </button>
+</nav>
+
+<script>
+const SOURCE_META = {
+  meera:      { label: 'Meera Sodha · Guardian', cls: 'src-meera',      url: 'https://www.theguardian.com/food/series/meera-sodha' },
+  nyt:        { label: 'NYT Cooking',             cls: 'src-nyt',        url: 'https://cooking.nytimes.com' },
+  minimalist: { label: 'Minimalist Baker',        cls: 'src-minimalist', url: 'https://minimalistbaker.com' },
+  lck:        { label: 'Lazy Cat Kitchen',        cls: 'src-lck',        url: 'https://www.lazycatkitchen.com' },
+  rpl:        { label: 'Rainbow Plant Life',      cls: 'src-rpl',        url: 'https://rainbowplantlife.com' },
+  other:      { label: 'Recipe',                  cls: 'src-other',      url: null },
+};
+
+// veganSub: if set, recipe is vegetarian but easily made vegan — string describes the sub needed
+let PLAN = JSON.parse(localStorage.getItem('mealplan') || 'null') || [
+  { day:'Monday',    batch:null,
+    pL:{t:'Lentil bolognese leftovers + salad',h:true},  gL:{t:'Office',h:false},
+    d:{name:'Fennel and dill dal with brown rice',    src:'meera',
+       url:'https://www.theguardian.com/food/series/meera-sodha',
+       note:'Yellow split mung lentils, coconut milk, fresh dill. Meera Sodha Guardian column — search "fennel dill dal". Make a large pot; great reheated.',
+       prot:'~20g/portion', veganSub:null} },
+  { day:'Tuesday',   batch:null,
+    pL:{t:'Office (own expense)',h:false}, gL:{t:'Office',h:false},
+    d:{name:'Ginger sesame noodles with crispy tofu',  src:'minimalist',
+       url:'https://minimalistbaker.com/vegan-ginger-sesame-noodles-with-crispy-tofu/',
+       note:'Sheet pan tofu with roasted veg, tossed in a ginger sesame sauce. Peter doubles his tofu. Add edamame for extra protein.',
+       prot:'~26g/portion', veganSub:null} },
+  { day:'Wednesday', batch:null,
+    pL:{t:'Grain bowl: batch rice + roasted veg + hummus',h:true}, gL:{t:'Office',h:false},
+    d:{name:'Spinach, tomato and chickpea curry with rice', src:'meera',
+       url:'https://www.theguardian.com/food/series/meera-sodha',
+       note:'Chana saag from Fresh India — mustard seeds, cumin, chickpeas, spinach. Search "Meera Sodha chana saag". Quick enough for a weeknight.',
+       prot:'~18g/portion', veganSub:'Vegetarian: the recipe suggests a yoghurt side. Use plant-based yoghurt or skip entirely.'} },
+  { day:'Thursday',  batch:'Sara batch cooks',
+    pL:{t:'Office (own expense)',h:false}, gL:{t:'Butternut and red lentil soup (batch)',h:true},
+    d:{name:'Gochujang tempeh with rice and slaw',  src:'lck',
+       url:'https://www.lazycatkitchen.com/gochujang-tempeh/',
+       note:'Tempeh marinated in gochujang, soy, sesame oil and maple syrup then baked. Sara cooks. Highest-protein dinner of the week.',
+       prot:'~30g/portion', veganSub:null} },
+  { day:'Friday',    batch:null,
+    pL:{t:'Butternut soup (Thu batch) + sourdough',h:true}, gL:{t:'Office',h:false},
+    d:{name:'Roast peppers, cannellini beans and crisp capers',  src:'meera',
+       url:'https://www.theguardian.com/food/series/meera-sodha',
+       note:'Meera Sodha Guardian (June 2024). Mediterranean and storecupboard-friendly. Serve on a platter with sourdough. Search "Meera Sodha roast peppers cannellini".',
+       prot:'~16g/portion', veganSub:null} },
+  { day:'Saturday',  batch:null,
+    pL:{t:'Shared mezze: hummus, pitta, falafel, olives',h:true}, gL:{t:'Shared mezze',h:true},
+    d:{name:'Peanut noodles with edamame and crispy tofu',  src:'rpl',
+       url:'https://rainbowplantlife.com/peanut-noodles/',
+       note:'Creamy peanut sauce, bouncy noodles, edamame and baked tofu. Use Turkish grocer peanut butter. Peter adds an extra portion of tofu.',
+       prot:'~26g/portion', veganSub:null} },
+  { day:'Sunday',    batch:'Peter batch cooks',
+    pL:{t:'Grain bowl: batch grains + roasted veg + tahini',h:true}, gL:{t:'Shared grain bowl',h:true},
+    d:{name:'Lentil bolognese with pasta',  src:'nyt',
+       url:'https://cooking.nytimes.com/search?q=hetty+mckinnon+lentil',
+       note:'Hetty Lui McKinnon for NYT Cooking — hearty, pantry-friendly, fully vegan. Make a double or triple portion for Mon and Tue lunches.',
+       prot:'~20g/portion', veganSub:null} },
+];
+
+const SHOPPING = [
+  { cat:'Protein', est:'€9–11', items:[
+    {n:'Firm tofu ×2 (AH Terra bio, 325g each)',w:'Albert Heijn',p:'€2.60'},{n:'Tempeh ×1 (AH Terra plain, 250g)',w:'Albert Heijn',p:'€1.59'},
+    {n:'Black lentils, dried (500g)',w:'Turkish grocer',p:'~€1.80'},{n:'Green lentils, dried (500g)',w:'Turkish grocer',p:'~€1.50'},
+    {n:'Chickpeas ×2 tins (AH Terra, 400g)',w:'Albert Heijn',p:'€2.00'},{n:'White beans ×1 tin (AH Terra, 400g)',w:'Albert Heijn',p:'~€0.99'},
+    {n:'Frozen edamame, shelled (AH Terra, 450g)',w:'Albert Heijn',p:'€2.49'}
+  ]},
+  { cat:'Carbs and bread', est:'€10–13', items:[
+    {n:'Soba noodles (250g)',w:'AH',p:'~€2.50'},{n:'Brown rice (1kg)',w:'Turkish grocer (est.)',p:'~€1.50'},
+    {n:'Pasta, penne or rigatoni (500g)',w:'AH / Jumbo',p:'~€1.00'},{n:'Sourdough loaf',w:'AH / local bakery',p:'~€3.50'},
+    {n:'Pitta ×8',w:'Turkish grocer',p:'~€2.00'}
+  ]},
+  { cat:'Fresh veg', est:'€18–22', items:[
+    {n:'Onions (1kg)',w:'Turkish grocer',p:'~€1.20'},{n:'Garlic (1 head)',w:'Turkish grocer',p:'~€0.80'},
+    {n:'Fresh ginger',w:'Turkish grocer',p:'~€0.50'},{n:'Spinach (200g bag)',w:'AH',p:'~€2.00'},
+    {n:'Broccoli ×1 head',w:'Turkish grocer',p:'~€1.80'},{n:'Butternut squash ×1 large',w:'AH / Turkish',p:'~€2.50'},
+    {n:'Cherry tomatoes (400g)',w:'Turkish grocer',p:'~€2.00'},{n:'Courgettes ×2',w:'Turkish grocer',p:'~€2.00'},
+    {n:'Red peppers ×2',w:'Turkish grocer',p:'~€2.00'},{n:'Lemons ×2',w:'Turkish grocer',p:'~€1.00'},
+    {n:'Bananas ×6',w:'Turkish grocer',p:'~€1.50'}
+  ]},
+  { cat:'Pantry (not every week)', est:'€15–20 first week', items:[
+    {n:'Canned tomatoes ×2 (AH own brand, 400g)',w:'Albert Heijn',p:'~€1.50'},{n:'Coconut milk ×1 tin (Go-Tan or similar, 400ml)',w:'Albert Heijn',p:'€2.49'},
+    {n:'Vegetable stock, carton',w:'AH',p:'~€2.00'},{n:'Tahini (jar)',w:'Turkish grocer',p:'~€3.50'},
+    {n:'White miso paste (tub)',w:'AH',p:'~€3.50'},{n:'Gochujang paste (tub)',w:'AH / Asian grocer',p:'~€4.00'},
+    {n:'Sesame oil (bottle)',w:'AH',p:'~€3.00'}
+  ]},
+  { cat:'Breakfast and extras (Peter\'s shake + sides)', est:'€19–22', items:[
+    {n:'Rolled oats (1kg)',w:'AH / Jumbo',p:'~€1.80'},
+    {n:'Frozen blueberries (AH, 1kg)',w:'Albert Heijn',p:'€5.99'},
+    {n:'Peanut butter, 1kg jar (AH 100% pindakaas)',w:'Albert Heijn',p:'~€7.00', note:'Also used in Sat dinner'},
+    {n:'Chia seeds (250g)',w:'AH / health food shop',p:'~€3.00'},
+    {n:'Oat milk ×2 (AH Terra haverdrink, 1L)',w:'Albert Heijn',p:'~€3.00'},
+    {n:'Hummus, large tub',w:'Turkish grocer',p:'~€2.50'},
+  ]},
+  { cat:'Not on shared budget', est:"Peter's own", muted:true, items:[
+    {n:'Soy protein isolate',w:'Online / Holland & Barrett',p:'buy separately'},
+    {n:'Creatine (5g/day)',w:'Online / Holland & Barrett',p:'buy separately'},
+  ]},
+];
+
+const BATCH = [
+  { day:'Sunday', who:'Peter', dur:'2–2.5 hrs', tasks:[
+    {n:'Lentil bolognese',t:'45 min',d:"Triple portion. Sunday dinner plus Mon and Tue lunches for Peter. Freezes well."},
+    {n:'Batch brown rice',t:'30 min',d:'400g dry rice, portioned for Wed and Sun grain bowls.'},
+    {n:'Roast two trays of veg',t:'35 min',d:'Peppers, courgette, red onion, butternut — olive oil, salt, cumin. Covers grain bowls and sides all week.'},
+    {n:'Lentil bolognese (Hetty McKinnon)',t:'45 min',d:"Triple portion. Sunday dinner plus Mon and Tue lunches for Peter. Hetty McKinnon recipe — search NYT Cooking. Freezes well."},
+  ]},
+  { day:'Thursday', who:'Sara', dur:'1–1.5 hrs', tasks:[
+    {n:'Butternut and red lentil soup',t:'40 min',d:"Big pot. Thursday lunch at home plus Peter's Friday lunch. Blend half; season with cumin, coriander, and chilli."},
+    {n:'Marinate the tempeh',t:'10 min',d:'Gochujang, soy, sesame oil, maple syrup. Sits while the soup cooks.'},
+    {n:'Prep sheet pan veg',t:'15 min',d:'Broccoli into florets, tray ready. Dinner is 25 min in the oven from here.'},
+  ]},
+];
+
+let currentTab = 'plan';
+let swapState = { idx: null, loading: false, alts: [], err: null };
+let checkedItems = JSON.parse(localStorage.getItem('checked') || '{}');
+let priceUpdateState = { loading: false, changes: null, err: null };
+
+function savePlan() { localStorage.setItem('mealplan', JSON.stringify(PLAN)); }
+function saveChecked() { localStorage.setItem('checked', JSON.stringify(checkedItems)); }
+function saveShop() { localStorage.setItem('shopping', JSON.stringify(SHOPPING)); }
+
+// Rehydrate shopping prices from localStorage if available
+const savedShop = localStorage.getItem('shopping');
+if (savedShop) {
+  try {
+    const parsed = JSON.parse(savedShop);
+    parsed.forEach((g, gi) => {
+      if (SHOPPING[gi]) {
+        g.items.forEach((it, ii) => {
+          if (SHOPPING[gi].items[ii]) {
+            if (it.p) SHOPPING[gi].items[ii].p = it.p;
+            if (it.changedAt) SHOPPING[gi].items[ii].changedAt = it.changedAt;
+            if (it.prevP) SHOPPING[gi].items[ii].prevP = it.prevP;
+          }
+        });
+      }
+    });
+  } catch(e) {}
+}
+
+function setTab(id) {
+  currentTab = id;
+  swapState = { idx: null, loading: false, alts: [], err: null };
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+  render();
+}
+
+function srcMeta(key) { return SOURCE_META[key] || SOURCE_META.other; }
+
+function recipeUrl(dinner) {
+  if (dinner.url) return dinner.url;
+  const key = dinner.src || dinner.sourceKey || '';
+  const q = encodeURIComponent(dinner.name || '');
+  if (key === 'meera')      return 'https://www.theguardian.com/food/series/meera-sodha';
+  if (key === 'nyt')        return `https://cooking.nytimes.com/search?q=${q}`;
+  if (key === 'minimalist') return `https://minimalistbaker.com/?s=${q}`;
+  if (key === 'lck')        return `https://www.lazycatkitchen.com/?s=${q}`;
+  if (key === 'rpl')        return `https://rainbowplantlife.com/?s=${q}`;
+  return `https://www.google.com/search?q=vegan+${q}+recipe`;
+}
+
+async function triggerSwap(idx) {
+  swapState = { idx, loading: true, alts: [], err: null };
+  render();
+  const cur = PLAN[idx];
+  const MIN_PROTEIN_G = 20;
+  const sysPrompt = `You are a verified recipe assistant for a vegan couple in Amsterdam. Budget ~€8-12 per dinner for two.
+
+PROTEIN REQUIREMENT (critical): One partner (Peter) is targeting 3500 kcal/day with 150g+ protein. He needs at least 20g of protein per dinner portion. DO NOT suggest recipes where the main protein component (tofu, tempeh, lentils, chickpeas, beans, edamame) delivers fewer than 20g per serving. Prefer recipes with 22g or more. If a recipe is naturally lower-protein, only include it if a protein-boosting modification (e.g. double tofu, add edamame) is explicitly noted in the note field.
+
+CRITICAL RULES:
+1. Only suggest recipes you are highly confident actually exist on the named source. Do not invent recipes.
+2. If a recipe is vegetarian but easily made vegan (e.g. swap dairy yoghurt for plant-based), include it and set veganSub to a short description of the substitution needed. Otherwise set veganSub to null.
+3. Approved sources and sourceKey values: Meera Sodha Guardian column: "meera"; NYT Cooking (incl. Hetty McKinnon, Ali Slagle, Yewande Komolafe): "nyt"; Minimalist Baker: "minimalist"; Lazy Cat Kitchen: "lck"; Rainbow Plant Life: "rpl"; BOSH or School Night Vegan: "other".
+4. All ingredients must be available at Albert Heijn, Jumbo, or a Turkish grocer in the Netherlands.
+5. Return a numeric protein estimate in the proteinG field (integer, grams per portion for Peter's serving size). Be conservative — if unsure, estimate low.
+6. Respond ONLY with valid JSON. No markdown. No preamble.`;
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1200,
+        system: sysPrompt,
+        messages: [{ role: 'user', content: 'Suggest 3 alternative dinner recipes to replace: "' + cur.d.name + '". Each must deliver at least 20g protein per portion for Peter. Differ meaningfully in flavour/cuisine from each other and from the original. Return ONLY: {"alternatives":[{"name":"string","sourceLabel":"string","sourceKey":"string","url":"string or null","note":"string","proteinG":20,"veganSub":"string or null"}]} where proteinG is an integer (grams per portion, conservative estimate).' }]
+      })
+    });
+    const data = await resp.json();
+    const txt = data.content.filter(c => c.type === 'text').map(c => c.text).join('');
+    const parsed = JSON.parse(txt.replace(/```json|```/g, '').trim());
+    swapState = { idx, loading: false, alts: parsed.alternatives || [], err: null };
+  } catch(e) {
+    swapState = { idx, loading: false, alts: [], err: 'Could not load suggestions. Check your internet connection and try again.' };
+  }
+  render();
+}
+
+function acceptAlt(idx, j) {
+  const a = swapState.alts[j];
+  if (!a) return;
+  const pg = parseInt(a.proteinG) || 0;
+  PLAN[idx].d = {
+    name: a.name, src: a.sourceKey || 'other', srcLabel: a.sourceLabel || null,
+    url: a.url || null, note: a.note || '',
+    prot: pg ? `~${pg}g/portion` : (a.protein || ''),
+    veganSub: a.veganSub || null,
+  };
+  savePlan();
+  swapState = { idx: null, loading: false, alts: [], err: null };
+  render();
+}
+
+function cancelSwap() {
+  swapState = { idx: null, loading: false, alts: [], err: null };
+  render();
+}
+
+function toggleItem(key) {
+  checkedItems[key] = !checkedItems[key];
+  saveChecked();
+  render();
+}
+
+function clearChecked() {
+  checkedItems = {};
+  saveChecked();
+  render();
+}
+
+function render() {
+  const el = document.getElementById('main');
+  el.innerHTML = '';
+  const div = document.createElement('div');
+  div.className = 'tab-content';
+  if (currentTab === 'plan') div.innerHTML = renderPlan();
+  else if (currentTab === 'shopping') div.innerHTML = renderShopping();
+  else div.innerHTML = renderBatch();
+  el.appendChild(div);
+}
+
+function renderPlan() {
+  const cards = PLAN.map((d, i) => {
+    const sm = srcMeta(d.d.src);
+    const lbl = d.d.srcLabel || sm.label;
+    const isSw = swapState.idx === i;
+    const busyOther = swapState.idx !== null && swapState.idx !== i && swapState.loading;
+
+    let panel = '';
+    if (isSw) {
+      if (swapState.loading) {
+        panel = `<div class="swap-panel"><div class="loading-text"><div class="spinner"></div>Finding alternatives...</div></div>`;
+      } else if (swapState.err) {
+        panel = `<div class="swap-panel"><p class="err-text">${swapState.err}</p><button class="cancel-link" onclick="cancelSwap()">Dismiss</button></div>`;
+      } else if (swapState.alts.length) {
+        const filteredMsg = swapState.filteredCount
+          ? `<p style="font-size:12px;color:var(--ink-light);margin-bottom:8px">${swapState.filteredCount} suggestion${swapState.filteredCount>1?'s were':' was'} removed for not meeting the 20g protein minimum.</p>`
+          : '';
+        const altCards = swapState.alts.map((a, j) => {
+          const as = srcMeta(a.sourceKey || a.src);
+          const su = a.url || recipeUrl({ src: a.sourceKey, name: a.name });
+          const subHtml = a.veganSub ? `<div class="vegan-sub-pill" style="margin-bottom:6px">⚠ ${a.veganSub}</div>` : '';
+          return `<div class="alt-card">
+            <div class="alt-top">
+              <span class="alt-name">${a.name}</span>
+              <a class="src-badge ${as.cls}" href="${su}" target="_blank" rel="noopener">${a.sourceLabel || as.label}</a>
+            </div>
+            <p class="alt-note">${a.note} <strong style="color:var(--green-mid)">${a.protein}</strong></p>
+            ${subHtml}
+            <button class="use-btn" onclick="acceptAlt(${i}, ${j})">Use this recipe</button>
+          </div>`;
+        }).join('');
+        panel = `<div class="swap-panel">${altCards}<button class="cancel-link" onclick="cancelSwap()">Keep current recipe</button></div>`;
+      }
+    }
+
+    const rUrl = recipeUrl(d.d);
+    const veganSubHtml = d.d.veganSub
+      ? `<div class="vegan-sub-pill">⚠ ${d.d.veganSub}</div>`
+      : '';
+    return `<div class="day-card">
+      <div class="day-header">
+        <span class="day-name">${d.day}</span>
+        ${d.batch ? `<span class="batch-pill">${d.batch}</span>` : ''}
+      </div>
+      <div class="lunch-row">
+        <div class="lunch-cell">
+          <div class="cell-label">Peter's lunch</div>
+          <div class="cell-val ${d.pL.h ? '' : 'away'}">${d.pL.t}</div>
+        </div>
+        <div class="lunch-cell">
+          <div class="cell-label">Sara's lunch</div>
+          <div class="cell-val ${d.gL.h ? '' : 'away'}">${d.gL.t}</div>
+        </div>
+      </div>
+      <div class="dinner-section">
+        <div class="dinner-top">
+          <div class="dinner-name">${d.d.name}</div>
+          <div class="dinner-actions">
+            <a class="src-badge ${sm.cls}" href="${rUrl}" target="_blank" rel="noopener">${lbl}</a>
+            <button class="swap-btn" onclick="triggerSwap(${i})" ${busyOther ? 'disabled' : ''}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+              Swap
+            </button>
+          </div>
+        </div>
+        <p class="dinner-note">${d.d.note}<span class="prot-tag">${d.d.prot}</span></p>
+        <a class="recipe-link-btn" href="${rUrl}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Open recipe
+        </a>
+        ${veganSubHtml}
+        ${panel}
+      </div>
+    </div>`;
+  }).join('');
+
+  const legend = Object.entries(SOURCE_META).filter(([k]) => k !== 'other').map(([, s]) =>
+    `<a class="src-badge ${s.cls}" href="${s.url}" target="_blank" rel="noopener">${s.label}</a>`
+  ).join('');
+
+  return `<div class="info-bar">The breakfast shake covers ~74g protein. Aim for another 76g+ across lunch and dinner. On lower-protein nights, add a side of edamame or a larger portion of the main protein.</div>
+    ${cards}
+    <div class="legend">${legend}</div>`;
+}
+
+function renderShopping() {
+  const lastCheck = localStorage.getItem('lastPriceCheck');
+  const age = daysSince(lastCheck);
+  const stale = age > 90;
+  const isUpdating = priceUpdateState.loading;
+
+  const barClass = stale ? 'price-check-bar stale' : 'price-check-bar';
+  const labelText = lastCheck
+    ? `Prices last verified <strong>${fmtDate(lastCheck)}</strong>${stale ? ' — over 90 days ago. Worth checking for increases.' : '.'}`
+    : 'Prices have not been verified yet. Tap to check current AH and Jumbo prices.';
+  const btnLabel = isUpdating ? 'Checking...' : stale || !lastCheck ? 'Update prices' : 'Re-check prices';
+
+  let changeLog = '';
+  if (priceUpdateState.err) {
+    changeLog = `<div class="price-change-log"><p class="price-err">${priceUpdateState.err}</p></div>`;
+  } else if (priceUpdateState.changes !== null) {
+    if (priceUpdateState.changes.length === 0) {
+      changeLog = `<div class="price-change-log"><div class="price-change-log-title">All prices confirmed — no changes found.</div></div>`;
+    } else {
+      const rows = priceUpdateState.changes.map(c => {
+        const oldVal = parseFloat(c.old.replace(/[^0-9.]/g, ''));
+        const newVal = parseFloat(c.new.replace(/[^0-9.]/g, ''));
+        const dir = newVal > oldVal ? 'up' : newVal < oldVal ? 'down' : 'same';
+        const arrow = dir === 'up' ? '↑' : dir === 'down' ? '↓' : '=';
+        return `<div class="price-change-row">
+          <span class="price-change-name">${c.name.split('(')[0].trim()}</span>
+          <span class="price-change-old">${c.old}</span>
+          <span class="price-change-new ${dir}">${arrow} ${c.new}</span>
+        </div>`;
+      }).join('');
+      changeLog = `<div class="price-change-log">
+        <div class="price-change-log-title">${priceUpdateState.changes.length} price${priceUpdateState.changes.length > 1 ? 's' : ''} updated</div>
+        ${rows}
+      </div>`;
+    }
+  }
+
+  const anyChecked = Object.values(checkedItems).some(Boolean);
+  const groups = SHOPPING.map(g => {
+    const muted = g.muted || false;
+    const items = g.items.map((it, j) => {
+      const key = `${g.cat}__${j}`;
+      const checked = !!checkedItems[key];
+      const noteHtml = it.note ? `<span class="shop-item-note"> · ${it.note}</span>` : '';
+      const clickAttr = muted ? '' : `onclick="toggleItem('${key}')"`;
+      return `<div class="shop-item ${checked && !muted ? 'checked' : ''}" ${clickAttr}>
+        ${muted ? '<div class="shop-check" style="border-style:dashed;opacity:.4"></div>' : '<div class="shop-check"></div>'}
+        <div class="shop-item-info">
+          <div class="shop-item-name">${it.n}${noteHtml}</div>
+          <div class="shop-item-where">${it.w}</div>
+        </div>
+        <div class="shop-item-price ${it.changedAt ? (parseFloat(it.p.replace(/[^0-9.]/g,"")) > parseFloat((it.prevP||it.p).replace(/[^0-9.]/g,"")) ? "changed-up" : "changed-down") : ""}">${it.p}</div>
+      </div>`;
+    }).join('');
+    return `<div class="shop-group ${muted ? 'muted' : ''}">
+      <div class="shop-group-header">
+        <span class="shop-group-name">${g.cat}</span>
+        <span class="shop-group-est">${g.est}</span>
+      </div>
+      <div class="shop-list">${items}</div>
+    </div>`;
+  }).join('');
+
+  return `<p class="section-title">Grocery list</p>
+    <p class="section-sub">Tap items to check them off as you shop.</p>
+    <div class="${barClass}">
+      <span class="price-check-label">${labelText}</span>
+      <button class="price-update-btn ${isUpdating ? 'loading' : ''}" onclick="updatePrices()" ${isUpdating ? 'disabled' : ''}>${btnLabel}</button>
+    </div>
+    ${changeLog}
+    <div class="budget-grid">
+      <div class="budget-card"><div class="budget-label">Weekly</div><div class="budget-val">€55–65</div></div>
+      <div class="budget-card"><div class="budget-label">+ pantry</div><div class="budget-val">€65–85</div></div>
+      <div class="budget-card"><div class="budget-label">Monthly</div><div class="budget-val">€280–340</div></div>
+    </div>
+    <p class="shop-tip">Turkish grocer for lentils, rice, onions, garlic, ginger, fresh veg, and pitta. Get peanut butter from AH — the 1kg 100% peanut jar (also used in Saturday's peanut noodles). AH or Jumbo for tofu, tempeh, oat milk, canned goods, and frozen blueberries. Check Jumbo's weekly promotions for pantry staples. Soy protein isolate and creatine are Peter's own expense — not included in the shared budget estimate.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+      <button class="share-btn" onclick="shareList()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        Share list
+      </button>
+      ${anyChecked ? `<button class="clear-btn" style="margin-bottom:0" onclick="clearChecked()">Clear checked</button>` : ''}
+    </div>
+    ${groups}`;
+}
+
+function renderBatch() {
+  return `<p class="section-title">Batch cooking</p>
+    <p class="section-sub" style="margin-bottom:20px">Two sessions a week keep lunches and dinners running smoothly.</p>` +
+  BATCH.map(b => {
+    const tasks = b.tasks.map((t, i) => `<div class="batch-task">
+      <div class="batch-num">${i + 1}</div>
+      <div class="batch-card">
+        <div class="batch-task-top">
+          <span class="batch-task-name">${t.n}</span>
+          <span class="batch-task-time">${t.t}</span>
+        </div>
+        <p class="batch-task-desc">${t.d}</p>
+      </div>
+    </div>`).join('');
+    return `<div class="batch-block">
+      <div class="batch-day-header">
+        <span class="batch-day-name">${b.day}</span>
+        <span class="batch-day-meta">${b.who} · ${b.dur}</span>
+      </div>
+      ${tasks}
+    </div>`;
+  }).join('');
+}
+
+function daysSince(isoStr) {
+  if (!isoStr) return Infinity;
+  return (Date.now() - new Date(isoStr).getTime()) / 86400000;
+}
+
+function fmtDate(isoStr) {
+  if (!isoStr) return 'never';
+  const d = new Date(isoStr);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+async function updatePrices() {
+  priceUpdateState = { loading: true, changes: null, err: null };
+  renderContent();
+
+  // Build list of AH/Jumbo items only (not Turkish grocer estimates)
+  const items = [];
+  SHOPPING.forEach((g, gi) => {
+    if (g.muted) return;
+    g.items.forEach((it, ii) => {
+      if (it.w && (it.w.includes('Albert Heijn') || it.w.includes('Jumbo'))) {
+        items.push({ id: `${gi}_${ii}`, name: it.n, where: it.w, currentPrice: it.p });
+      }
+    });
+  });
+
+  const itemList = items.map(it => `- [${it.id}] ${it.name} (${it.where})`).join('\n');
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: 'You are a Dutch supermarket price checker. Search ah.nl and supermarktscanner.nl for current prices of the specified items at Albert Heijn or Jumbo in the Netherlands. Return ONLY valid JSON with no markdown, no preamble.',
+        messages: [{
+          role: 'user',
+          content: `Search for the current retail prices of these items at Albert Heijn (ah.nl) or Jumbo in the Netherlands. For each item, find its current price. Return ONLY this JSON structure, no markdown:\n{"prices":[{"id":"string","name":"string","price":"€X.XX","source":"ah.nl or jumbo.nl or estimate"}]}\n\nItems to check:\n${itemList}`
+        }]
+      })
+    });
+
+    const data = await resp.json();
+    const txt = data.content.filter(c => c.type === 'text').map(c => c.text).join('');
+    const parsed = JSON.parse(txt.replace(/\`\`\`json|\`\`\`/g, '').trim());
+
+    const changes = [];
+    const now = new Date().toISOString();
+
+    parsed.prices.forEach(update => {
+      const [gi, ii] = update.id.split('_').map(Number);
+      if (SHOPPING[gi] && SHOPPING[gi].items[ii]) {
+        const item = SHOPPING[gi].items[ii];
+        const oldPrice = item.p;
+        if (update.price && update.price !== oldPrice) {
+          changes.push({ name: item.n, old: oldPrice, new: update.price });
+          item.prevP = oldPrice;
+          item.p = update.price;
+          item.changedAt = now;
+        }
+      }
+    });
+
+    localStorage.setItem('lastPriceCheck', now);
+    saveShop();
+    priceUpdateState = { loading: false, changes, err: null };
+
+  } catch(e) {
+    priceUpdateState = { loading: false, changes: null, err: 'Price check failed. Check your internet connection and try again.' };
+  }
+  renderContent();
+}
+
+
+// ── API key ──────────────────────────────────────────────────────────────────
+function getApiKey() { return localStorage.getItem('apiKey') || ''; }
+function saveApiKey(k) { localStorage.setItem('apiKey', k.trim()); }
+
+function apiHeaders() {
+  const key = getApiKey();
+  const h = { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true', 'anthropic-version': '2023-06-01' };
+  if (key) h['x-api-key'] = key;
+  return h;
+}
+
+function openSettings() {
+  const key = getApiKey();
+  const el = document.getElementById('settings-modal');
+  el.style.display = 'flex';
+  el.className = 'modal-overlay';
+  el.innerHTML = `<div class="modal-sheet">
+    <p class="modal-title">Settings</p>
+    <p class="modal-sub">Add your Anthropic API key to enable recipe swaps and price updates. Get one free at <a href="https://console.anthropic.com" target="_blank" style="color:var(--green)">console.anthropic.com</a> — usage for this app is minimal (a few cents a month).</p>
+    ${key ? '<div class="modal-key-status ok">✓ API key saved</div>' : '<div class="modal-key-status missing">No API key — swaps and price updates are disabled</div>'}
+    <div class="modal-label">Anthropic API key</div>
+    <input class="modal-input" id="key-input" type="password" placeholder="sk-ant-..." value="${key}" autocomplete="off" spellcheck="false">
+    <div class="modal-row">
+      <button class="modal-btn secondary" onclick="closeSettings()">Cancel</button>
+      <button class="modal-btn primary" onclick="saveKeyFromInput()">Save key</button>
+    </div>
+  </div>`;
+}
+
+function closeSettings() {
+  const el = document.getElementById('settings-modal');
+  el.style.display = 'none';
+  el.innerHTML = '';
+}
+
+function saveKeyFromInput() {
+  const val = document.getElementById('key-input').value.trim();
+  saveApiKey(val);
+  closeSettings();
+  render();
+}
+
+// ── Export / share ────────────────────────────────────────────────────────────
+function shareList() {
+  const lines = ['🛒 Grocery list — ' + new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' }), ''];
+  SHOPPING.forEach(g => {
+    if (g.muted) return;
+    lines.push(g.cat.toUpperCase());
+    g.items.forEach(it => {
+      lines.push(`  ☐ ${it.n} — ${it.w.replace(' (est.)','')} — ${it.p}${it.note ? ' (' + it.note + ')' : ''}`);
+    });
+    lines.push('');
+  });
+  const text = lines.join('\n');
+
+  if (navigator.share) {
+    navigator.share({ title: 'Grocery list', text }).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    alert('List copied to clipboard — paste it into Notes or anywhere you like.');
+  }).catch(() => alert('Could not copy. Try the share button in Safari.'));
+}
+
+
+render();
+</script>
+</body>
+</html>
