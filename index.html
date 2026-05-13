@@ -580,7 +580,7 @@ body {
 
 <script>
 const SOURCE_META = {
-  meera:      { label: 'Meera Sodha · Guardian', cls: 'src-meera',      url: 'https://www.theguardian.com/food/series/meera-sodha' },
+  meera:      { label: 'Meera Sodha · Guardian', cls: 'src-meera',      url: 'https://www.google.com/search?q=meera+sodha+guardian+vegan+recipes' },
   nyt:        { label: 'NYT Cooking',             cls: 'src-nyt',        url: 'https://cooking.nytimes.com' },
   minimalist: { label: 'Minimalist Baker',        cls: 'src-minimalist', url: 'https://minimalistbaker.com' },
   lck:        { label: 'Lazy Cat Kitchen',        cls: 'src-lck',        url: 'https://www.lazycatkitchen.com' },
@@ -593,7 +593,7 @@ let PLAN = JSON.parse(localStorage.getItem('mealplan') || 'null') || [
   { day:'Monday',    batch:null,
     pL:{t:'Lentil bolognese leftovers + salad',h:true},  gL:{t:'Office',h:false},
     d:{name:'Fennel and dill dal with brown rice',    src:'meera',
-       url:'https://www.theguardian.com/food/series/meera-sodha',
+       url:'https://www.google.com/search?q=meera+sodha+fennel+dill+dal+guardian+recipe',
        note:'Yellow split mung lentils, coconut milk, fresh dill. Meera Sodha Guardian column — search "fennel dill dal". Make a large pot; great reheated.',
        prot:'~20g/portion', veganSub:null} },
   { day:'Tuesday',   batch:null,
@@ -605,7 +605,7 @@ let PLAN = JSON.parse(localStorage.getItem('mealplan') || 'null') || [
   { day:'Wednesday', batch:null,
     pL:{t:'Grain bowl: batch rice + roasted veg + hummus',h:true}, gL:{t:'Office',h:false},
     d:{name:'Spinach, tomato and chickpea curry with rice', src:'meera',
-       url:'https://www.theguardian.com/food/series/meera-sodha',
+       url:'https://www.google.com/search?q=meera+sodha+chana+saag+chickpea+spinach+curry+guardian+recipe',
        note:'Chana saag from Fresh India — mustard seeds, cumin, chickpeas, spinach. Search "Meera Sodha chana saag". Quick enough for a weeknight.',
        prot:'~18g/portion', veganSub:'Vegetarian: the recipe suggests a yoghurt side. Use plant-based yoghurt or skip entirely.'} },
   { day:'Thursday',  batch:'Sara batch cooks',
@@ -617,7 +617,7 @@ let PLAN = JSON.parse(localStorage.getItem('mealplan') || 'null') || [
   { day:'Friday',    batch:null,
     pL:{t:'Butternut soup (Thu batch) + sourdough',h:true}, gL:{t:'Office',h:false},
     d:{name:'Roast peppers, cannellini beans and crisp capers',  src:'meera',
-       url:'https://www.theguardian.com/food/series/meera-sodha',
+       url:'https://www.google.com/search?q=meera+sodha+roast+peppers+cannellini+beans+capers+guardian+recipe',
        note:'Meera Sodha Guardian (June 2024). Mediterranean and storecupboard-friendly. Serve on a platter with sourdough. Search "Meera Sodha roast peppers cannellini".',
        prot:'~16g/portion', veganSub:null} },
   { day:'Saturday',  batch:null,
@@ -628,9 +628,9 @@ let PLAN = JSON.parse(localStorage.getItem('mealplan') || 'null') || [
        prot:'~26g/portion', veganSub:null} },
   { day:'Sunday',    batch:'Peter batch cooks',
     pL:{t:'Grain bowl: batch grains + roasted veg + tahini',h:true}, gL:{t:'Shared grain bowl',h:true},
-    d:{name:'Lentil bolognese with pasta',  src:'nyt',
-       url:'https://cooking.nytimes.com/search?q=hetty+mckinnon+lentil',
-       note:'Hetty Lui McKinnon for NYT Cooking — hearty, pantry-friendly, fully vegan. Make a double or triple portion for Mon and Tue lunches.',
+    d:{name:'Vegan bolognese with mushrooms and red lentils',  src:'minimalist',
+       url:'https://minimalistbaker.com/vegan-bolognese-with-mushrooms-red-lentils/',
+       note:'Minimalist Baker — mushrooms and red lentils in a rich herby tomato sauce, 10 ingredients. Make a double or triple portion for Mon and Tue lunches.',
        prot:'~20g/portion', veganSub:null} },
 ];
 
@@ -679,7 +679,7 @@ const BATCH = [
     {n:'Lentil bolognese',t:'45 min',d:"Triple portion. Sunday dinner plus Mon and Tue lunches for Peter. Freezes well."},
     {n:'Batch brown rice',t:'30 min',d:'400g dry rice, portioned for Wed and Sun grain bowls.'},
     {n:'Roast two trays of veg',t:'35 min',d:'Peppers, courgette, red onion, butternut — olive oil, salt, cumin. Covers grain bowls and sides all week.'},
-    {n:'Lentil bolognese (Hetty McKinnon)',t:'45 min',d:"Triple portion. Sunday dinner plus Mon and Tue lunches for Peter. Hetty McKinnon recipe — search NYT Cooking. Freezes well."},
+    {n:'Vegan bolognese with mushrooms and red lentils',t:'45 min',d:"Triple portion — Sunday dinner plus Mon and Tue lunches for Peter. Minimalist Baker recipe. Freezes well."},
   ]},
   { day:'Thursday', who:'Sara', dur:'1–1.5 hrs', tasks:[
     {n:'Butternut and red lentil soup',t:'40 min',d:"Big pot. Thursday lunch at home plus Peter's Friday lunch. Blend half; season with cumin, coriander, and chilli."},
@@ -729,7 +729,7 @@ function recipeUrl(dinner) {
   if (dinner.url) return dinner.url;
   const key = dinner.src || dinner.sourceKey || '';
   const q = encodeURIComponent(dinner.name || '');
-  if (key === 'meera')      return 'https://www.theguardian.com/food/series/meera-sodha';
+  if (key === 'meera')      return `https://www.google.com/search?q=meera+sodha+${q}+guardian+recipe`;
   if (key === 'nyt')        return `https://cooking.nytimes.com/search?q=${q}`;
   if (key === 'minimalist') return `https://minimalistbaker.com/?s=${q}`;
   if (key === 'lck')        return `https://www.lazycatkitchen.com/?s=${q}`;
