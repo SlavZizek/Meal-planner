@@ -443,6 +443,29 @@ body {
 
 
 
+
+/* ── Batch recipe row ── */
+.batch-recipe-row {
+  margin: 0 16px 12px;
+  background: var(--gold-light);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.batch-recipe-label {
+  font-size: 10px; font-weight: 500; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
+}
+.batch-recipe-name {
+  font-size: 13px; font-weight: 500; color: var(--ink);
+  display: block; margin-bottom: 6px;
+}
+.batch-recipe-actions {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 6px; flex-wrap: wrap;
+}
+.batch-recipe-note {
+  font-size: 12px; color: var(--ink-mid); line-height: 1.5;
+}
 /* ── Recipe modal ── */
 .recipe-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,.5);
@@ -683,85 +706,157 @@ const SOURCE_META = {
 let PLAN = JSON.parse(localStorage.getItem('mealplan') || 'null') || [
   { day:'Monday',    batch:null,
     pL:{t:'Lentil bolognese leftovers + salad',h:true},  gL:{t:'Office',h:false},
-    d:{name:'Fennel and dill dal with brown rice',    src:'meera',
+    d:{name:'Fennel and dill dal with brown rice', src:'meera',
        url:'https://www.google.com/search?q=meera+sodha+fennel+dill+dal+guardian+recipe',
-       note:'Yellow split mung lentils, coconut milk, fresh dill. Meera Sodha Guardian column — search "fennel dill dal". Make a large pot; great reheated.',
-       prot:'~20g/portion', veganSub:null} },
+       note:'Yellow split mung lentils, coconut milk, fresh dill. Meera Sodha Guardian — search "fennel dill dal". Make a large pot; great reheated.',
+       prot:'~20g/portion', veganSub:null,
+       ingredients:[{id:'garlic',name:'Garlic (2 heads)',where:'Turkish grocer',price:'~€1.00',cat:'veg'},{id:'onions',name:'Onions ×3',where:'Turkish grocer',price:'~€0.60',cat:'veg'},{id:'ginger',name:'Fresh ginger (large piece)',where:'Turkish grocer',price:'~€0.80',cat:'veg'},{id:'fennel',name:'Fennel bulb ×1',where:'AH / Turkish grocer',price:'~€1.20',cat:'veg'},{id:'dill',name:'Fresh dill, small bunch',where:'Turkish grocer',price:'~€1.00',cat:'herbs'},{id:'mung_lentils',name:'Split mung lentils (500g)',where:'Turkish grocer',price:'~€1.50',cat:'protein'},{id:'brown_rice',name:'Brown rice (1kg)',where:'Turkish grocer',price:'~€1.50',cat:'carbs'},{id:'coconut_milk',name:'Coconut milk (Go-Tan, 400ml)',where:'Albert Heijn',price:'€2.49',cat:'tins'}]} },
   { day:'Tuesday',   batch:null,
     pL:{t:'Office (own expense)',h:false}, gL:{t:'Office',h:false},
-    d:{name:'Ginger sesame noodles with crispy tofu',  src:'minimalist',
+    d:{name:'Ginger sesame noodles with crispy tofu', src:'minimalist',
        url:'https://minimalistbaker.com/vegan-ginger-sesame-noodles-with-crispy-tofu/',
-       note:'Sheet pan tofu with roasted veg, tossed in a ginger sesame sauce. Peter doubles his tofu. Add edamame for extra protein.',
-       prot:'~26g/portion', veganSub:null} },
+       note:'Sheet pan tofu with roasted veg, ginger sesame sauce. Peter doubles his tofu. Add edamame for extra protein.',
+       prot:'~26g/portion', veganSub:null,
+       ingredients:[{id:'garlic',name:'Garlic (2 heads)',where:'Turkish grocer',price:'~€1.00',cat:'veg'},{id:'onions',name:'Onions ×3',where:'Turkish grocer',price:'~€0.60',cat:'veg'},{id:'ginger',name:'Fresh ginger (large piece)',where:'Turkish grocer',price:'~€0.80',cat:'veg'},{id:'tofu',name:'Firm tofu ×3 (AH Terra bio, 325g each)',where:'Albert Heijn',price:'~€3.90',cat:'protein'},{id:'red_cabbage',name:'Red cabbage, small',where:'Turkish grocer',price:'~€1.20',cat:'veg'},{id:'green_beans',name:'Green beans (AH, 350g)',where:'Albert Heijn',price:'€3.39',cat:'veg'},{id:'lime',name:'Limes ×2',where:'Turkish grocer',price:'~€0.80',cat:'veg'},{id:'soba_noodles',name:'Hakubaku soba noodles (300g)',where:'Albert Heijn',price:'€2.99',cat:'carbs'},{id:'soy_sauce',name:'Soy sauce or tamari (bottle)',where:'AH / Asian grocer',price:'~€3.00',cat:'pantry'},{id:'sesame_oil',name:'Toasted sesame oil (AH, 250ml)',where:'Albert Heijn',price:'€3.69',cat:'pantry'},{id:'maple_syrup',name:'Maple syrup (BioToday, 250ml)',where:'Albert Heijn',price:'€7.99',cat:'pantry'},{id:'chili_garlic_sauce',name:'Chili garlic sauce / sriracha',where:'AH / Asian grocer',price:'~€2.50',cat:'pantry'},{id:'brown_rice',name:'Brown rice (1kg)',where:'Turkish grocer',price:'~€1.50',cat:'carbs'}]} },
   { day:'Wednesday', batch:null,
     pL:{t:'Grain bowl: batch rice + roasted veg + hummus',h:true}, gL:{t:'Office',h:false},
     d:{name:'Spinach, tomato and chickpea curry with rice', src:'meera',
        url:'https://www.google.com/search?q=meera+sodha+chana+saag+chickpea+spinach+curry+guardian+recipe',
-       note:'Chana saag from Fresh India — mustard seeds, cumin, chickpeas, spinach. Search "Meera Sodha chana saag". Quick enough for a weeknight.',
-       prot:'~18g/portion', veganSub:'Vegetarian: the recipe suggests a yoghurt side. Use plant-based yoghurt or skip entirely.'} },
+       note:'Chana saag from Fresh India — mustard seeds, cumin, chickpeas, spinach. Quick enough for a weeknight.',
+       prot:'~18g/portion', veganSub:'Vegetarian: recipe suggests a yoghurt side. Use plant-based yoghurt or skip entirely.',
+       ingredients:[{id:'garlic',name:'Garlic (2 heads)',where:'Turkish grocer',price:'~€1.00',cat:'veg'},{id:'onions',name:'Onions ×3',where:'Turkish grocer',price:'~€0.60',cat:'veg'},{id:'ginger',name:'Fresh ginger (large piece)',where:'Turkish grocer',price:'~€0.80',cat:'veg'},{id:'chickpeas',name:'Chickpeas ×2 tins (AH Terra, 400g)',where:'Albert Heijn',price:'€2.00',cat:'protein'},{id:'spinach',name:'Spinach (200g bag)',where:'Albert Heijn',price:'~€2.00',cat:'veg'},{id:'canned_tomatoes',name:'Canned tomatoes ×4 (AH, 400g) — Wed curry ×1 + Sun bolognese ×3',where:'Albert Heijn',price:'~€3.00',cat:'tins'},{id:'brown_rice',name:'Brown rice (1kg)',where:'Turkish grocer',price:'~€1.50',cat:'carbs'}]} },
   { day:'Thursday',  batch:'Sara batch cooks',
-    pL:{t:'Office (own expense)',h:false}, gL:{t:'Butternut and red lentil soup (batch)',h:true},
-    d:{name:'Gochujang tempeh with rice and slaw',  src:'lck',
+    pL:{t:'Office (own expense)',h:false}, gL:{t:'Moroccan-spiced red lentil soup (batch)',h:true},
+    batchRecipe:{
+      name:'Moroccan-spiced red lentil soup',
+      src:'rpl',
+      url:'https://rainbowplantlife.com/red-lentil-soup/',
+      note:'Rainbow Plant Life. Use butternut squash in place of sweet potato (as the recipe suggests). Sara makes a large pot. Her lunch Thursday plus Peter lunch Friday. Season well with cumin, coriander, and ras el hanout.',
+      prot:'~14g/portion', veganSub:null,
+      ingredients:[{id:'garlic',name:'Garlic (2 heads)',where:'Turkish grocer',price:'~€1.00',cat:'veg'},{id:'onions',name:'Onions ×3',where:'Turkish grocer',price:'~€0.60',cat:'veg'},{id:'ginger',name:'Fresh ginger (large piece)',where:'Turkish grocer',price:'~€0.80',cat:'veg'},{id:'butternut',name:'Butternut squash ×1 large',where:'AH / Turkish grocer',price:'~€2.50',cat:'veg'},{id:'red_lentils',name:'Red lentils (1kg) — Thu soup + Sun bolognese',where:'Turkish grocer',price:'~€3.00',cat:'protein'},{id:'veg_stock',name:'Vegetable stock carton (1L)',where:'AH',price:'~€2.00',cat:'tins'},{id:'coriander_fresh',name:'Fresh coriander, 1 bunch',where:'Turkish grocer',price:'~€0.80',cat:'herbs'},{id:'coconut_milk',name:'Coconut milk (Go-Tan, 400ml)',where:'Albert Heijn',price:'€2.49',cat:'tins'}]
+    },
+    d:{name:'Gochujang tempeh with rice and slaw', src:'lck',
        url:'https://www.lazycatkitchen.com/gochujang-tempeh/',
        note:'Tempeh marinated in gochujang, soy, sesame oil and maple syrup then baked. Sara cooks. Highest-protein dinner of the week.',
-       prot:'~30g/portion', veganSub:null} },
+       prot:'~30g/portion', veganSub:null,
+       ingredients:[{id:'garlic',name:'Garlic (2 heads)',where:'Turkish grocer',price:'~€1.00',cat:'veg'},{id:'onions',name:'Onions ×3',where:'Turkish grocer',price:'~€0.60',cat:'veg'},{id:'ginger',name:'Fresh ginger (large piece)',where:'Turkish grocer',price:'~€0.80',cat:'veg'},{id:'tempeh',name:'Tempeh ×2 (AH Terra plain, 250g each)',where:'Albert Heijn',price:'€3.18',cat:'protein'},{id:'carrots',name:'Carrots ×5 — Thu slaw ×2 + Sun bolognese ×3',where:'Turkish grocer',price:'~€0.80',cat:'veg'},{id:'red_cabbage',name:'Red cabbage, small',where:'Turkish grocer',price:'~€1.20',cat:'veg'},{id:'radishes',name:'Radishes ×10',where:'Turkish grocer',price:'~€0.70',cat:'veg'},{id:'sugar_snaps',name:'Sugar snaps (AH, 250g)',where:'Albert Heijn',price:'€2.89',cat:'veg'},{id:'spring_onion',name:'Spring onions, 1 bunch',where:'Albert Heijn',price:'€0.99',cat:'veg'},{id:'coriander_fresh',name:'Fresh coriander, 1 bunch',where:'Turkish grocer',price:'~€0.80',cat:'herbs'},{id:'peanuts_roasted',name:'Roasted peanuts (100g)',where:'Turkish grocer',price:'~€0.70',cat:'protein'},{id:'gochujang',name:'Gochujang paste (tub)',where:'AH / Asian grocer',price:'~€4.00',cat:'pantry'},{id:'rice_vinegar',name:'Rice wine vinegar (bottle)',where:'AH / Asian grocer',price:'~€2.50',cat:'pantry'},{id:'soy_sauce',name:'Soy sauce or tamari (bottle)',where:'AH / Asian grocer',price:'~€3.00',cat:'pantry'},{id:'sesame_oil',name:'Toasted sesame oil (AH, 250ml)',where:'Albert Heijn',price:'€3.69',cat:'pantry'},{id:'maple_syrup',name:'Maple syrup (BioToday, 250ml)',where:'Albert Heijn',price:'€7.99',cat:'pantry'},{id:'brown_rice',name:'Brown rice (1kg)',where:'Turkish grocer',price:'~€1.50',cat:'carbs'}]} },
   { day:'Friday',    batch:null,
     pL:{t:'Butternut soup (Thu batch) + sourdough',h:true}, gL:{t:'Office',h:false},
-    d:{name:'Roast peppers, cannellini beans and crisp capers',  src:'meera',
+    d:{name:'Roast peppers, cannellini beans and crisp capers', src:'meera',
        url:'https://www.google.com/search?q=meera+sodha+roast+peppers+cannellini+beans+capers+guardian+recipe',
-       note:'Meera Sodha Guardian (June 2024). Mediterranean and storecupboard-friendly. Serve on a platter with sourdough. Search "Meera Sodha roast peppers cannellini".',
-       prot:'~16g/portion', veganSub:null} },
+       note:'Meera Sodha Guardian (June 2024). Mediterranean and storecupboard-friendly. Serve on a platter with sourdough.',
+       prot:'~16g/portion', veganSub:null,
+       ingredients:[{id:'garlic',name:'Garlic (2 heads)',where:'Turkish grocer',price:'~€1.00',cat:'veg'},{id:'red_peppers',name:'Red peppers ×6 — Fri ×3, Sat ×1, Sun batch veg ×2',where:'Turkish grocer',price:'~€3.50',cat:'veg'},{id:'white_beans',name:'White/cannellini beans ×2 tins (AH Terra, 400g)',where:'Albert Heijn',price:'€2.00',cat:'protein'},{id:'capers',name:'Capers, small jar',where:'Albert Heijn',price:'~€1.50',cat:'tins'},{id:'sourdough',name:'Sourdough loaf',where:'AH / local bakery',price:'~€3.50',cat:'carbs'}]} },
   { day:'Saturday',  batch:null,
     pL:{t:'Shared mezze: hummus, pitta, falafel, olives',h:true}, gL:{t:'Shared mezze',h:true},
-    d:{name:'Peanut noodles with edamame and crispy tofu',  src:'rpl',
+    d:{name:'Peanut noodles with edamame and crispy tofu', src:'rpl',
        url:'https://rainbowplantlife.com/peanut-noodles/',
-       note:'Creamy peanut sauce, bouncy noodles, edamame and baked tofu. Use Turkish grocer peanut butter. Peter adds an extra portion of tofu.',
-       prot:'~26g/portion', veganSub:null} },
+       note:'Creamy peanut sauce, bouncy noodles, edamame and baked tofu. Peter adds an extra portion of tofu.',
+       prot:'~26g/portion', veganSub:null,
+       ingredients:[{id:'garlic',name:'Garlic (2 heads)',where:'Turkish grocer',price:'~€1.00',cat:'veg'},{id:'onions',name:'Onions ×3',where:'Turkish grocer',price:'~€0.60',cat:'veg'},{id:'ginger',name:'Fresh ginger (large piece)',where:'Turkish grocer',price:'~€0.80',cat:'veg'},{id:'tofu',name:'Firm tofu ×3 (AH Terra bio, 325g each)',where:'Albert Heijn',price:'~€3.90',cat:'protein'},{id:'edamame',name:'Frozen edamame, shelled (AH Terra, 450g)',where:'Albert Heijn',price:'€2.49',cat:'protein'},{id:'peanuts_roasted',name:'Roasted peanuts (100g)',where:'Turkish grocer',price:'~€0.70',cat:'protein'},{id:'udon_noodles',name:'Hakubaku udon noodles (270g)',where:'Albert Heijn',price:'€2.99',cat:'carbs'},{id:'peanut_butter',name:'Peanut butter, 1kg (AH 100% pindakaas)',where:'Albert Heijn',price:'~€7.00',cat:'breakfast'},{id:'spring_onion',name:'Spring onions, 1 bunch',where:'Albert Heijn',price:'€0.99',cat:'veg'},{id:'red_peppers',name:'Red peppers ×6',where:'Turkish grocer',price:'~€3.50',cat:'veg'},{id:'lime',name:'Limes ×2',where:'Turkish grocer',price:'~€0.80',cat:'veg'},{id:'soy_sauce',name:'Soy sauce or tamari (bottle)',where:'AH / Asian grocer',price:'~€3.00',cat:'pantry'},{id:'sesame_oil',name:'Toasted sesame oil (AH, 250ml)',where:'Albert Heijn',price:'€3.69',cat:'pantry'},{id:'rice_vinegar',name:'Rice wine vinegar (bottle)',where:'AH / Asian grocer',price:'~€2.50',cat:'pantry'},{id:'maple_syrup',name:'Maple syrup (BioToday, 250ml)',where:'Albert Heijn',price:'€7.99',cat:'pantry'},{id:'chili_crisp',name:'Chili crisp / chili oil',where:'AH / Asian grocer',price:'~€3.50',cat:'pantry'}]} },
   { day:'Sunday',    batch:'Peter batch cooks',
     pL:{t:'Grain bowl: batch grains + roasted veg + tahini',h:true}, gL:{t:'Shared grain bowl',h:true},
-    d:{name:'Vegan bolognese with mushrooms and red lentils',  src:'minimalist',
+    d:{name:'Vegan bolognese with mushrooms and red lentils', src:'minimalist',
        url:'https://minimalistbaker.com/vegan-bolognese-with-mushrooms-red-lentils/',
-       note:'Minimalist Baker — mushrooms and red lentils in a rich herby tomato sauce, 10 ingredients. Make a double or triple portion for Mon and Tue lunches.',
-       prot:'~20g/portion', veganSub:null} },
+       note:'Minimalist Baker — mushrooms and red lentils in a rich herby tomato sauce. Make a double or triple portion for Mon and Tue lunches.',
+       prot:'~20g/portion', veganSub:null,
+       ingredients:[{id:'garlic',name:'Garlic (2 heads)',where:'Turkish grocer',price:'~€1.00',cat:'veg'},{id:'onions',name:'Onions ×3',where:'Turkish grocer',price:'~€0.60',cat:'veg'},{id:'ginger',name:'Fresh ginger (large piece)',where:'Turkish grocer',price:'~€0.80',cat:'veg'},{id:'mushrooms',name:'Mushrooms ×3 packs (250g each)',where:'Albert Heijn',price:'~€3.90',cat:'veg'},{id:'carrots',name:'Carrots ×5',where:'Turkish grocer',price:'~€0.80',cat:'veg'},{id:'basil_fresh',name:'Fresh basil, small bunch',where:'Turkish grocer',price:'~€1.00',cat:'herbs'},{id:'red_lentils',name:'Red lentils (1kg)',where:'Turkish grocer',price:'~€3.00',cat:'protein'},{id:'pasta',name:'Pasta penne/rigatoni (750g)',where:'AH / Jumbo',price:'~€1.50',cat:'carbs'},{id:'tomato_paste',name:'Tomato paste ×1 tube',where:'AH / Jumbo',price:'~€1.50',cat:'tins'},{id:'canned_tomatoes',name:'Canned tomatoes ×4 (AH, 400g)',where:'Albert Heijn',price:'~€3.00',cat:'tins'}]} },
 ];
 
 const SHOPPING = [
-  { cat:'Protein', est:'€9–11', items:[
-    {n:'Firm tofu ×2 (AH Terra bio, 325g each)',w:'Albert Heijn',p:'€2.60'},{n:'Tempeh ×1 (AH Terra plain, 250g)',w:'Albert Heijn',p:'€1.59'},
-    {n:'Black lentils, dried (500g)',w:'Turkish grocer',p:'~€1.80'},{n:'Green lentils, dried (500g)',w:'Turkish grocer',p:'~€1.50'},
-    {n:'Chickpeas ×2 tins (AH Terra, 400g)',w:'Albert Heijn',p:'€2.00'},{n:'White beans ×1 tin (AH Terra, 400g)',w:'Albert Heijn',p:'~€0.99'},
-    {n:'Frozen edamame, shelled (AH Terra, 450g)',w:'Albert Heijn',p:'€2.49'}
+
+  // ── Weekly fresh shop ──────────────────────────────────────────────────────
+  { cat:'Fresh vegetables', est:'~€20–25', items:[
+    {n:'Onions ×3 large',         w:'Turkish grocer (est.)', p:'~€0.60', note:'Mon dal, Wed curry, Sun bolognese ×3'},
+    {n:'Red onion ×1',            w:'Turkish grocer (est.)', p:'~€0.30', note:'Sun/Wed batch roasted veg'},
+    {n:'Garlic (2 heads)',         w:'Turkish grocer (est.)', p:'~€1.00', note:'All recipes'},
+    {n:'Fresh ginger (large piece)',w:'Turkish grocer (est.)',p:'~€0.80', note:'Mon, Tue, Thu, Sat'},
+    {n:'Fennel bulb ×1',           w:'AH / Turkish grocer',  p:'~€1.20', note:'Mon dal'},
+    {n:'Carrots ×5',               w:'Turkish grocer (est.)', p:'~€0.80', note:'Thu slaw ×2 + Sun bolognese ×3'},
+    {n:'Red cabbage, small (400g)',w:'Turkish grocer (est.)', p:'~€1.20', note:'Tue noodles + Thu slaw — shared'},
+    {n:'Green beans (AH, 350g)',   w:'Albert Heijn',          p:'€3.39',  note:'Tue noodles — one pack'},
+    {n:'Radishes ×10',             w:'Turkish grocer (est.)', p:'~€0.70', note:'Thu slaw'},
+    {n:'Sugar snaps (AH, 250g)',   w:'Albert Heijn',          p:'€2.89',  note:'Thu slaw (optional — skip to save ~€3)'},
+    {n:'Spring onions, 1 bunch',   w:'Albert Heijn',          p:'€0.99',  note:'Thu slaw + Sat noodles — shared'},
+    {n:'Spinach (200g bag)',        w:'Albert Heijn',          p:'~€2.00', note:'Wed curry'},
+    {n:'Butternut squash ×1 large',w:'AH / Turkish grocer',  p:'~€2.50', note:'Thu batch soup + Sun batch roasted veg'},
+    {n:'Red peppers ×6',           w:'Turkish grocer (est.)', p:'~€3.50', note:'Fri roast peppers ×3, Sat noodles ×1, Sun batch veg ×2'},
+    {n:'Courgettes ×2',            w:'Turkish grocer (est.)', p:'~€2.00', note:'Sun batch roasted veg for grain bowls'},
+    {n:'Mushrooms ×3 packs (250g)',w:'Albert Heijn',          p:'~€3.90', note:'Sun bolognese triple batch — ~€1.30/pack'},
+    {n:'Limes ×2',                 w:'Turkish grocer (est.)', p:'~€0.80', note:'Tue noodles + Sat noodles — shared'},
+    {n:'Lemons ×1',                w:'Turkish grocer (est.)', p:'~€0.30', note:'General use'},
+    {n:'Bananas ×7',               w:'Turkish grocer (est.)', p:'~€1.75', note:'Peter shake, one per day'},
   ]},
-  { cat:'Carbs and bread', est:'€10–13', items:[
-    {n:'Soba noodles (250g)',w:'AH',p:'~€2.50'},{n:'Brown rice (1kg)',w:'Turkish grocer (est.)',p:'~€1.50'},
-    {n:'Pasta, penne or rigatoni (500g)',w:'AH / Jumbo',p:'~€1.00'},{n:'Sourdough loaf',w:'AH / local bakery',p:'~€3.50'},
-    {n:'Pitta ×8',w:'Turkish grocer',p:'~€2.00'}
+
+  { cat:'Fresh herbs', est:'~€3–4', items:[
+    {n:'Fresh dill (small bunch)',      w:'Turkish grocer (est.)', p:'~€1.00', note:'Mon dal'},
+    {n:'Fresh coriander (small bunch)', w:'Turkish grocer (est.)', p:'~€0.80', note:'Thu slaw + soup garnish — shared'},
+    {n:'Fresh basil (small bunch)',     w:'Turkish grocer (est.)', p:'~€1.00', note:'Sun bolognese'},
   ]},
-  { cat:'Fresh veg', est:'€18–22', items:[
-    {n:'Onions (1kg)',w:'Turkish grocer',p:'~€1.20'},{n:'Garlic (1 head)',w:'Turkish grocer',p:'~€0.80'},
-    {n:'Fresh ginger',w:'Turkish grocer',p:'~€0.50'},{n:'Spinach (200g bag)',w:'AH',p:'~€2.00'},
-    {n:'Broccoli ×1 head',w:'Turkish grocer',p:'~€1.80'},{n:'Butternut squash ×1 large',w:'AH / Turkish',p:'~€2.50'},
-    {n:'Cherry tomatoes (400g)',w:'Turkish grocer',p:'~€2.00'},{n:'Courgettes ×2',w:'Turkish grocer',p:'~€2.00'},
-    {n:'Red peppers ×2',w:'Turkish grocer',p:'~€2.00'},{n:'Lemons ×2',w:'Turkish grocer',p:'~€1.00'},
-    {n:'Bananas ×6',w:'Turkish grocer',p:'~€1.50'}
+
+  { cat:'Protein', est:'~€17–20', items:[
+    {n:'Firm tofu ×3 (AH Terra bio, 325g each)', w:'Albert Heijn',          p:'~€3.90', note:'Tue noodles + Sat noodles + extra for protein'},
+    {n:'Tempeh ×2 (AH Terra plain, 250g each)',  w:'Albert Heijn',          p:'~€3.18', note:'Thu dinner — recipe needs 400g'},
+    {n:'Split mung/yellow lentils (500g)',        w:'Turkish grocer (est.)', p:'~€1.50', note:'Mon dal'},
+    {n:'Red lentils (750g)',                      w:'Turkish grocer (est.)', p:'~€2.25', note:'Thu batch soup + Sun bolognese triple batch'},
+    {n:'Chickpeas ×2 tins (AH Terra, 400g)',     w:'Albert Heijn',          p:'~€2.00', note:'Wed curry'},
+    {n:'White/cannellini beans ×2 tins (400g)',  w:'Albert Heijn',          p:'~€2.00', note:'Fri roast peppers — recipe uses 2 tins'},
+    {n:'Frozen edamame, shelled (AH Terra, 450g)',w:'Albert Heijn',         p:'~€2.49', note:'Sat peanut noodles'},
+    {n:'Roasted peanuts (100g)',                  w:'Turkish grocer (est.)', p:'~€0.70', note:'Thu tempeh garnish + Sat noodles — shared'},
   ]},
-  { cat:'Pantry (not every week)', est:'€15–20 first week', items:[
-    {n:'Canned tomatoes ×2 (AH own brand, 400g)',w:'Albert Heijn',p:'~€1.50'},{n:'Coconut milk ×1 tin (Go-Tan or similar, 400ml)',w:'Albert Heijn',p:'€2.49'},
-    {n:'Vegetable stock, carton',w:'AH',p:'~€2.00'},{n:'Tahini (jar)',w:'Turkish grocer',p:'~€3.50'},
-    {n:'White miso paste (tub)',w:'AH',p:'~€3.50'},{n:'Gochujang paste (tub)',w:'AH / Asian grocer',p:'~€4.00'},
-    {n:'Sesame oil (bottle)',w:'AH',p:'~€3.00'}
+
+  { cat:'Carbs and bread', est:'~€11–13', items:[
+    {n:'Brown rice (1kg)',                    w:'Turkish grocer (est.)', p:'~€1.50', note:'Mon, Wed, Thu'},
+    {n:'Pasta penne/rigatoni (750g, 1.5 packs)',w:'AH / Jumbo',         p:'~€1.50', note:'Sun bolognese triple batch — covers Mon/Tue lunches'},
+    {n:'Hakubaku soba (300g) + udon (270g)',w:'Albert Heijn',           p:'€5.98',  note:'Tue + Sat noodles — both €2.99 each'},
+    {n:'Sourdough loaf',                      w:'AH / local bakery',    p:'~€3.50', note:'Fri roast peppers + Peter Fri lunch'},
+    {n:'Pitta ×8',                            w:'Turkish grocer (est.)', p:'~€2.00', note:'Sat mezze'},
   ]},
-  { cat:'Breakfast and extras (Peter\'s shake + sides)', est:'€19–22', items:[
-    {n:'Rolled oats (1kg)',w:'AH / Jumbo',p:'~€1.80'},
-    {n:'Frozen blueberries (AH, 1kg)',w:'Albert Heijn',p:'€5.99'},
-    {n:'Peanut butter, 1kg jar (AH 100% pindakaas)',w:'Albert Heijn',p:'~€7.00', note:'Also used in Sat dinner'},
-    {n:'Chia seeds (250g)',w:'AH / health food shop',p:'~€3.00'},
-    {n:'Oat milk ×2 (AH Terra haverdrink, 1L)',w:'Albert Heijn',p:'~€3.00'},
-    {n:'Hummus, large tub',w:'Turkish grocer',p:'~€2.50'},
+
+  // ── Weekly pantry replenishment ────────────────────────────────────────────
+  { cat:'Tins and jars (weekly top-up)', est:'~€9–11', items:[
+    {n:'Canned tomatoes ×4 (AH own brand, 400g)', w:'Albert Heijn', p:'~€3.00', note:'Wed curry ×1 + Sun bolognese triple ×3'},
+    {n:'Tomato paste ×1 tube',                     w:'AH / Jumbo',  p:'~€1.50', note:'Sun bolognese'},
+    {n:'Coconut milk ×1 tin (Go-Tan, 400ml)',      w:'Albert Heijn', p:'~€2.49', note:'Mon dal (+ optional Thu soup)'},
+    {n:'Vegetable stock, carton (1L)',              w:'AH',          p:'~€2.00', note:'Thu batch soup'},
+    {n:'Capers ×1 small jar',                      w:'Albert Heijn', p:'~€1.50', note:'Fri roast peppers — buy once, lasts weeks'},
   ]},
-  { cat:'Not on shared budget', est:"Peter's own", muted:true, items:[
-    {n:'Soy protein isolate',w:'Online / Holland & Barrett',p:'buy separately'},
-    {n:'Creatine (5g/day)',w:'Online / Holland & Barrett',p:'buy separately'},
+
+  // ── Pantry staples (buy once, top up occasionally) ─────────────────────────
+  { cat:'Pantry staples (occasional)', est:'~€25–30 to stock up', items:[
+    {n:'Soy sauce or tamari (bottle)',    w:'AH / Asian grocer',    p:'~€3.00', note:'Thu, Tue, Sat'},
+    {n:'Toasted sesame oil (AH, 250ml)',  w:'Albert Heijn',          p:'€3.69',  note:'Thu slaw + Tue + Sat — lasts several weeks'},
+    {n:'Rice wine vinegar (bottle)',      w:'AH / Asian grocer',    p:'~€2.50', note:'Thu slaw + Sat noodles — shared'},
+    {n:'Maple syrup (BioToday, 250ml)',   w:'Albert Heijn',          p:'€7.99',  note:'Thu + Sat — pricey but lasts many weeks at 2 tbsp/use'},
+    {n:'Chili garlic sauce or sriracha', w:'AH / Asian grocer',    p:'~€2.50', note:'Tue noodles + Sat noodles — shared'},
+    {n:'Chili crisp / chili oil',        w:'AH / Asian grocer',    p:'~€3.50', note:'Sat peanut noodles'},
+    {n:'Gochujang paste (tub)',           w:'AH / Asian grocer',    p:'~€4.00', note:'Thu tempeh'},
+    {n:'Tahini (jar)',                    w:'Turkish grocer (est.)', p:'~€3.50', note:'Grain bowl dressings'},
+    {n:'White miso paste (tub)',          w:'AH',                   p:'~€3.50', note:'Grain bowl dressings'},
+    {n:'Olive oil (bottle)',              w:'AH / Jumbo',           p:'~€5.00', note:'Fri, Sun, general cooking'},
+    {n:'Red pepper flakes',              w:'Turkish grocer (est.)', p:'~€0.50', note:'Sun bolognese'},
+  ]},
+
+  // ── Saturday mezze ────────────────────────────────────────────────────────
+  { cat:'Saturday mezze (lunch)', est:'~€7–9', items:[
+    {n:'Hummus, large tub',           w:'Turkish grocer (est.)', p:'~€2.50', note:'Also used in Wed/Sun grain bowls'},
+    {n:'Falafel (ready-made)',         w:'Turkish grocer (est.)', p:'~€2.50', note:'Sat mezze'},
+    {n:'Olives, small jar or loose',  w:'Turkish grocer (est.)', p:'~€2.00', note:'Sat mezze'},
+  ]},
+
+  // ── Peter shake + Sara oatmeal ────────────────────────────────────────────
+  { cat:"Breakfast (Peter shake + Sara oatmeal)", est:'~€19–22', items:[
+    {n:'Rolled oats (1kg)',                        w:'AH / Jumbo',   p:'~€1.80', note:'Peter shake + Sara oatmeal daily'},
+    {n:'Frozen blueberries (AH, 1kg)',             w:'Albert Heijn', p:'€5.99',  note:'Peter shake daily — one bag lasts ~2 weeks'},
+    {n:'Peanut butter, 1kg (AH 100% pindakaas)',  w:'Albert Heijn', p:'~€7.00', note:'Peter shake daily + Sat peanut noodles'},
+    {n:'Chia seeds (250g)',                        w:'AH / health food shop', p:'~€3.00', note:'Peter shake daily — lasts ~5 weeks'},
+    {n:'Oat milk ×2 (AH Terra haverdrink, 1L)',   w:'Albert Heijn', p:'~€3.00', note:'Sara oatmeal + general use'},
+  ]},
+
+  // ── Not on shared budget ──────────────────────────────────────────────────
+  { cat:"Not on shared budget", est:"Peter's own", muted:true, items:[
+    {n:'Soy protein isolate (50g/day)', w:'Online / Holland & Barrett', p:'buy separately'},
+    {n:'Creatine (5g/day)',             w:'Online / Holland & Barrett', p:'buy separately'},
   ]},
 ];
 
@@ -773,7 +868,7 @@ const BATCH = [
     {n:'Vegan bolognese with mushrooms and red lentils',t:'45 min',d:"Triple portion — Sunday dinner plus Mon and Tue lunches for Peter. Minimalist Baker recipe. Freezes well."},
   ]},
   { day:'Thursday', who:'Sara', dur:'1–1.5 hrs', tasks:[
-    {n:'Butternut and red lentil soup',t:'40 min',d:"Big pot. Thursday lunch at home plus Peter's Friday lunch. Blend half; season with cumin, coriander, and chilli."},
+    {n:'Moroccan-spiced red lentil soup (Rainbow Plant Life)',t:'40 min',d:'Use butternut squash in place of sweet potato as the recipe suggests. Big pot — Thu lunch + Fri lunch for Peter. Season well with cumin, coriander, and ras el hanout.'},
     {n:'Marinate the tempeh',t:'10 min',d:'Gochujang, soy, sesame oil, maple syrup. Sits while the soup cooks.'},
     {n:'Prep sheet pan veg',t:'15 min',d:'Broccoli into florets, tray ready. Dinner is 25 min in the oven from here.'},
   ]},
@@ -786,26 +881,13 @@ let priceUpdateState = { loading: false, changes: null, err: null };
 
 function savePlan() { localStorage.setItem('mealplan', JSON.stringify(PLAN)); }
 function saveChecked() { localStorage.setItem('checked', JSON.stringify(checkedItems)); }
-function saveShop() { localStorage.setItem('shopping', JSON.stringify(SHOPPING)); }
-
-// Rehydrate shopping prices from localStorage if available
-const savedShop = localStorage.getItem('shopping');
-if (savedShop) {
-  try {
-    const parsed = JSON.parse(savedShop);
-    parsed.forEach((g, gi) => {
-      if (SHOPPING[gi]) {
-        g.items.forEach((it, ii) => {
-          if (SHOPPING[gi].items[ii]) {
-            if (it.p) SHOPPING[gi].items[ii].p = it.p;
-            if (it.changedAt) SHOPPING[gi].items[ii].changedAt = it.changedAt;
-            if (it.prevP) SHOPPING[gi].items[ii].prevP = it.prevP;
-          }
-        });
-      }
-    });
-  } catch(e) {}
+function saveShop() {
+  localStorage.setItem('priceOverrides', JSON.stringify(savedPriceOverrides));
+  localStorage.setItem('shoppingBase', JSON.stringify(SHOPPING_BASE));
 }
+
+// Rehydrate price overrides from localStorage (applied during computeShoppingList)
+const savedPriceOverrides = JSON.parse(localStorage.getItem('priceOverrides') || '{}');
 
 function setTab(id) {
   currentTab = id;
@@ -843,7 +925,8 @@ CRITICAL RULES:
 3. Approved sources and sourceKey values: Meera Sodha Guardian column: "meera"; NYT Cooking (incl. Hetty McKinnon, Ali Slagle, Yewande Komolafe): "nyt"; Minimalist Baker: "minimalist"; Lazy Cat Kitchen: "lck"; Rainbow Plant Life: "rpl"; BOSH or School Night Vegan: "other".
 4. All ingredients must be available at Albert Heijn, Jumbo, or a Turkish grocer in the Netherlands.
 5. Return a numeric protein estimate in the proteinG field (integer, grams per portion for Peter's serving size). Be conservative — if unsure, estimate low.
-6. Respond ONLY with valid JSON. No markdown. No preamble.`;
+6. Return a structured ingredients list. Include only purchasable items (not water, salt, pepper, basic spices). Each ingredient: id (snake_case), name (with qty), where (shop), price (euros estimate), cat (veg/herbs/protein/carbs/tins/pantry/breakfast).
+7. Respond ONLY with valid JSON. No markdown. No preamble.`;
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -852,7 +935,7 @@ CRITICAL RULES:
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1200,
         system: sysPrompt,
-        messages: [{ role: 'user', content: 'Suggest 3 alternative dinner recipes to replace: "' + cur.d.name + '". Each must deliver at least 20g protein per portion for Peter. Differ meaningfully in flavour/cuisine from each other and from the original. Return ONLY: {"alternatives":[{"name":"string","sourceLabel":"string","sourceKey":"string","url":"string or null","note":"string","proteinG":20,"veganSub":"string or null"}]} where proteinG is an integer (grams per portion, conservative estimate).' }]
+        messages: [{ role: 'user', content: 'Suggest 3 alternative dinner recipes to replace: "' + cur.d.name + '". Each must deliver at least 20g protein per portion for Peter. Differ meaningfully in flavour/cuisine from each other and from the original. Return ONLY: {"alternatives":[{"name":"string","sourceLabel":"string","sourceKey":"string","url":"string or null","note":"string","proteinG":20,"veganSub":"string or null","ingredients":[{"id":"string","name":"string","where":"string","price":"string","cat":"string"}]}]} where proteinG is an integer.' }]
       })
     });
     const data = await resp.json();
@@ -874,6 +957,7 @@ function acceptAlt(idx, j) {
     url: a.url || null, note: a.note || '',
     prot: pg ? `~${pg}g/portion` : (a.protein || ''),
     veganSub: a.veganSub || null,
+    ingredients: a.ingredients || [],
   };
   savePlan();
   swapState = { idx: null, loading: false, alts: [], err: null };
@@ -962,6 +1046,20 @@ function renderPlan() {
           <div class="cell-val ${d.gL.h ? '' : 'away'}">${d.gL.t}</div>
         </div>
       </div>
+      ${d.batchRecipe ? `<div class="batch-recipe-row">
+        <div class="batch-recipe-label">Batch recipe</div>
+        <div class="batch-recipe-inner">
+          <span class="batch-recipe-name">${d.batchRecipe.name}</span>
+          <div class="batch-recipe-actions">
+            <a class="src-badge ${srcMeta(d.batchRecipe.src).cls}" href="${d.batchRecipe.url}" target="_blank" rel="noopener">${srcMeta(d.batchRecipe.src).label}</a>
+            <button class="recipe-view-btn" onclick="viewBatchRecipe(${i})" style="margin-left:4px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              View recipe
+            </button>
+          </div>
+          <p class="batch-recipe-note">${d.batchRecipe.note}</p>
+        </div>
+      </div>` : ''}
       <div class="dinner-section">
         <div class="dinner-top">
           <div class="dinner-name">${d.d.name}</div>
@@ -1030,46 +1128,56 @@ function renderShopping() {
     }
   }
 
+  const computed = computeShoppingList();
   const anyChecked = Object.values(checkedItems).some(Boolean);
-  const groups = SHOPPING.map(g => {
+
+  const groups = computed.map(g => {
     const muted = g.muted || false;
-    const items = g.items.map((it, j) => {
-      const key = `${g.cat}__${j}`;
+    const catNote = g.catKey === 'pantry'
+      ? `<span style="font-size:11px;color:var(--ink-light);font-weight:400"> — check and top up as needed</span>` : '';
+    const items = g.items.map(it => {
+      const key = it.id;
       const checked = !!checkedItems[key];
-      const noteHtml = it.note ? `<span class="shop-item-note"> · ${it.note}</span>` : '';
+      const usedNote = it.usedIn && it.usedIn.length > 0
+        ? `<span class="shop-item-note"> · ${it.usedIn.join(', ')}</span>` : '';
+      const extraNote = it.note
+        ? `<span class="shop-item-note"> · ${it.note}</span>` : '';
+      const displayPrice = it.p || it.price || '';
+      const priceClass = it.changedAt
+        ? (parseFloat(displayPrice.replace(/[^0-9.]/g,'')) > parseFloat((it.prevP||displayPrice).replace(/[^0-9.]/g,'')) ? 'changed-up' : 'changed-down')
+        : '';
       const clickAttr = muted ? '' : `onclick="toggleItem('${key}')"`;
       return `<div class="shop-item ${checked && !muted ? 'checked' : ''}" ${clickAttr}>
         ${muted ? '<div class="shop-check" style="border-style:dashed;opacity:.4"></div>' : '<div class="shop-check"></div>'}
         <div class="shop-item-info">
-          <div class="shop-item-name">${it.n}${noteHtml}</div>
-          <div class="shop-item-where">${it.w}</div>
+          <div class="shop-item-name">${it.name}${usedNote}${extraNote}</div>
+          <div class="shop-item-where">${it.where}</div>
         </div>
-        <div class="shop-item-price ${it.changedAt ? (parseFloat(it.p.replace(/[^0-9.]/g,"")) > parseFloat((it.prevP||it.p).replace(/[^0-9.]/g,"")) ? "changed-up" : "changed-down") : ""}">${it.p}</div>
+        <div class="shop-item-price ${priceClass}">${displayPrice}</div>
       </div>`;
     }).join('');
     return `<div class="shop-group ${muted ? 'muted' : ''}">
       <div class="shop-group-header">
-        <span class="shop-group-name">${g.cat}</span>
-        <span class="shop-group-est">${g.est}</span>
+        <span class="shop-group-name">${g.cat}${catNote}</span>
       </div>
       <div class="shop-list">${items}</div>
     </div>`;
   }).join('');
 
   return `<p class="section-title">Grocery list</p>
-    <p class="section-sub">Tap items to check them off as you shop.</p>
+    <p class="section-sub">Tap items to check them off as you shop. The list updates automatically when you swap a recipe.</p>
     <div class="${barClass}">
       <span class="price-check-label">${labelText}</span>
       <button class="price-update-btn ${isUpdating ? 'loading' : ''}" onclick="updatePrices()" ${isUpdating ? 'disabled' : ''}>${btnLabel}</button>
     </div>
     ${changeLog}
     <div class="budget-grid">
-      <div class="budget-card"><div class="budget-label">Weekly</div><div class="budget-val">€55–65</div></div>
-      <div class="budget-card"><div class="budget-label">+ pantry</div><div class="budget-val">€65–85</div></div>
-      <div class="budget-card"><div class="budget-label">Monthly</div><div class="budget-val">€280–340</div></div>
+      <div class="budget-card"><div class="budget-label">Weekly (ongoing)</div><div class="budget-val">€85–100</div></div>
+      <div class="budget-card"><div class="budget-label">+ pantry top-up</div><div class="budget-val">€95–115</div></div>
+      <div class="budget-card"><div class="budget-label">Monthly estimate</div><div class="budget-val">€370–430</div></div>
     </div>
-    <p class="shop-tip">Turkish grocer for lentils, rice, onions, garlic, ginger, fresh veg, and pitta. Get peanut butter from AH — the 1kg 100% peanut jar (also used in Saturday's peanut noodles). AH or Jumbo for tofu, tempeh, oat milk, canned goods, and frozen blueberries. Check Jumbo's weekly promotions for pantry staples. Soy protein isolate and creatine are Peter's own expense — not included in the shared budget estimate.</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+    <p class="shop-tip">Turkish grocer for fresh veg, herbs, lentils, rice, pitta, hummus, falafel, and peanuts. AH for tofu, tempeh, canned goods, noodles, oat milk, frozen items, and most pantry staples. Budget leaves ~€120/month headroom for snacks, desserts, and drinks.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
       <button class="share-btn" onclick="shareList()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
         Share list
@@ -1078,6 +1186,7 @@ function renderShopping() {
     </div>
     ${groups}`;
 }
+
 
 function renderBatch() {
   return `<p class="section-title">Batch cooking</p>
@@ -1118,13 +1227,15 @@ async function updatePrices() {
   priceUpdateState = { loading: true, changes: null, err: null };
   renderContent();
 
-  // Build list of AH/Jumbo items only (not Turkish grocer estimates)
+  // Build list of AH/Jumbo items from the computed shopping list
+  const computed = computeShoppingList();
   const items = [];
-  SHOPPING.forEach((g, gi) => {
+  computed.forEach(g => {
     if (g.muted) return;
-    g.items.forEach((it, ii) => {
-      if (it.w && (it.w.includes('Albert Heijn') || it.w.includes('Jumbo'))) {
-        items.push({ id: `${gi}_${ii}`, name: it.n, where: it.w, currentPrice: it.p });
+    g.items.forEach(it => {
+      const where = it.where || '';
+      if (where.includes('Albert Heijn') || where.includes('Jumbo') || where.includes('AH')) {
+        items.push({ id: it.id, name: it.name, where, currentPrice: it.p || it.price || '' });
       }
     });
   });
@@ -1153,18 +1264,18 @@ async function updatePrices() {
 
     const changes = [];
     const now = new Date().toISOString();
+    // Build a lookup of current prices from computed list
+    const currentPrices = {};
+    computeShoppingList().forEach(g => g.items.forEach(it => {
+      currentPrices[it.id] = it.p || it.price || '';
+    }));
 
     parsed.prices.forEach(update => {
-      const [gi, ii] = update.id.split('_').map(Number);
-      if (SHOPPING[gi] && SHOPPING[gi].items[ii]) {
-        const item = SHOPPING[gi].items[ii];
-        const oldPrice = item.p;
-        if (update.price && update.price !== oldPrice) {
-          changes.push({ name: item.n, old: oldPrice, new: update.price });
-          item.prevP = oldPrice;
-          item.p = update.price;
-          item.changedAt = now;
-        }
+      const id = update.id;
+      const oldPrice = currentPrices[id] || '';
+      if (update.price && update.price !== oldPrice) {
+        changes.push({ name: update.name || id, old: oldPrice, new: update.price });
+        savedPriceOverrides[id] = { p: update.price, prevP: oldPrice, changedAt: now };
       }
     });
 
@@ -1223,12 +1334,14 @@ function saveKeyFromInput() {
 
 // ── Export / share ────────────────────────────────────────────────────────────
 function shareList() {
+  const computed = computeShoppingList();
   const lines = ['🛒 Grocery list — ' + new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' }), ''];
-  SHOPPING.forEach(g => {
+  computed.forEach(g => {
     if (g.muted) return;
     lines.push(g.cat.toUpperCase());
     g.items.forEach(it => {
-      lines.push(`  ☐ ${it.n} — ${it.w.replace(' (est.)','')} — ${it.p}${it.note ? ' (' + it.note + ')' : ''}`);
+      const usedStr = it.usedIn && it.usedIn.length ? ` (${it.usedIn.join(', ')})` : '';
+      lines.push(`  ☐ ${it.name}${usedStr} — ${it.where} — ${it.p || it.price || ''}`);
     });
     lines.push('');
   });
@@ -1317,11 +1430,18 @@ function renderRecipeModal(dinner, state) {
   el.onclick = (e) => { if (e.target === el) closeRecipe(); };
 }
 
-async function viewRecipe(idx) {
-  const dinner = PLAN[idx].d;
-  const rUrl = recipeUrl(dinner);
+function viewBatchRecipe(idx) {
+  const br = PLAN[idx].batchRecipe;
+  if (!br) return;
+  viewRecipeByDinner(br);
+}
 
-  // Show loading immediately
+async function viewRecipe(idx) {
+  viewRecipeByDinner(PLAN[idx].d);
+}
+
+async function viewRecipeByDinner(dinner) {
+  const rUrl = recipeUrl(dinner);
   renderRecipeModal(dinner, { loading: true });
 
   // Check cache first
@@ -1377,6 +1497,87 @@ Keep ingredient amounts and units in the amount field. Keep steps concise — ju
   } catch(e) {
     renderRecipeModal(dinner, { loading: false, err: 'Could not load the recipe. Check your connection or open it in Safari.' });
   }
+}
+
+
+// ── Dynamic shopping list ────────────────────────────────────────────────────
+function computeShoppingList() {
+  const map = {}; // id -> {item data + usedIn:[]}
+
+  // 1. Base items (always needed — no recipe association)
+  for (const item of SHOPPING_BASE) {
+    map[item.id] = { ...item, usedIn: [], changedAt: null, prevP: null };
+    // Apply any stored price override
+    if (savedPriceOverrides[item.id]) {
+      const o = savedPriceOverrides[item.id];
+      map[item.id].prevP = o.prevP;
+      map[item.id].p = o.p;
+      map[item.id].changedAt = o.changedAt;
+    }
+  }
+
+  // 2. Recipe ingredients from PLAN
+  PLAN.forEach(day => {
+    const label = day.day.slice(0, 3);
+
+    const addIngredients = (ingredients, tag) => {
+      if (!ingredients) return;
+      ingredients.forEach(ing => {
+        const override = savedPriceOverrides[ing.id];
+        const price = override ? override.p : ing.price;
+        if (map[ing.id]) {
+          // Already listed — just add this recipe to usedIn
+          if (!map[ing.id].usedIn.includes(tag)) {
+            map[ing.id].usedIn.push(tag);
+          }
+        } else {
+          map[ing.id] = {
+            id: ing.id, name: ing.name, where: ing.where,
+            price, cat: ing.cat, usedIn: [tag],
+            changedAt: override ? override.changedAt : null,
+            prevP: override ? override.prevP : null,
+          };
+        }
+      });
+    };
+
+    addIngredients(day.d.ingredients, label);
+    if (day.batchRecipe) addIngredients(day.batchRecipe.ingredients, label + ' soup');
+  });
+
+  // 3. Group by category
+  const catOrder = ['veg','herbs','protein','carbs','tins','pantry','breakfast','mezze'];
+  const catLabels = {
+    veg:       'Fresh vegetables',
+    herbs:     'Fresh herbs',
+    protein:   'Protein',
+    carbs:     'Carbs and bread',
+    tins:      'Tins, jars and stock (weekly top-up)',
+    pantry:    'Pantry staples (top up as needed)',
+    breakfast: 'Breakfast — Peter shake + Sara oatmeal',
+    mezze:     'Saturday mezze (lunch)',
+  };
+
+  const groups = {};
+  for (const item of Object.values(map)) {
+    if (!groups[item.cat]) groups[item.cat] = [];
+    groups[item.cat].push(item);
+  }
+
+  const result = catOrder
+    .filter(c => groups[c])
+    .map(c => ({ cat: catLabels[c], catKey: c, muted: false, items: groups[c] }));
+
+  // 4. Not-on-shared-budget section (always last, always muted)
+  result.push({
+    cat: 'Not on shared budget', catKey: 'not_shared', muted: true,
+    items: [
+      {id:'soy_protein', name:'Soy protein isolate',  where:'Online / Holland & Barrett', price:'buy separately', usedIn:[]},
+      {id:'creatine',    name:'Creatine (5g/day)',     where:'Online / Holland & Barrett', price:'buy separately', usedIn:[]},
+    ]
+  });
+
+  return result;
 }
 
 
