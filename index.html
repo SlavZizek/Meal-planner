@@ -944,9 +944,9 @@ CRITICAL RULES:
       headers: apiHeaders(),
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 3000,
+        max_tokens: 1500,
         system: sysPrompt,
-        messages: [{ role: 'user', content: 'Suggest 3 alternative dinner recipes to replace: "' + cur.d.name + '". Each must deliver at least 20g protein per portion for Peter. Differ meaningfully in flavour/cuisine from each other and from the original. Return ONLY valid JSON with no markdown: {"alternatives":[{"name":"string","sourceLabel":"string","sourceKey":"string","url":"string or null","note":"string","proteinG":20,"veganSub":"string or null","ingredients":[{"id":"snake_case_id","name":"name with qty","where":"shop","price":"€X.XX","cat":"veg|herbs|protein|carbs|tins|pantry|breakfast"}]}]} — include only ingredients that must be purchased, max 10 per recipe, proteinG is an integer.' }]
+        messages: [{ role: 'user', content: 'Suggest 3 alternative dinner recipes to replace: "' + cur.d.name + '". Each must deliver at least 20g protein per portion for Peter. Differ meaningfully in flavour/cuisine from each other and from the original. Return ONLY valid JSON, no markdown, no preamble: {"alternatives":[{"name":"string","sourceLabel":"string","sourceKey":"string","url":"string or null","note":"string","proteinG":20,"veganSub":"string or null"}]} where proteinG is an integer.' }]
       })
     });
     const data = await resp.json();
@@ -1004,11 +1004,44 @@ function acceptAlt(idx, j) {
     url: a.url || null, note: a.note || '',
     prot: pg ? `~${pg}g/portion` : (a.protein || ''),
     veganSub: a.veganSub || null,
-    ingredients: a.ingredients || [],
+    ingredients: [], // fetched separately below
+    ingredientsPending: true,
   };
   savePlan();
   swapState = { idx: null, loading: false, alts: [], err: null };
   render();
+  // Fetch ingredients in the background
+  fetchSwapIngredients(idx, a);
+}
+
+async function fetchSwapIngredients(idx, alt) {
+  if (!getApiKey()) return;
+  const rUrl = alt.url || recipeUrl({ src: alt.sourceKey, name: alt.name });
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1500,
+        system: 'You are a recipe ingredient extractor. Return ONLY valid JSON, no markdown, no preamble.',
+        messages: [{ role: 'user', content: 'For the recipe "' + alt.name + '" (from ' + (alt.sourceLabel || alt.sourceKey) + '), list the ingredients that need to be purchased (skip water, salt, pepper, standard spices). Return ONLY: {"ingredients":[{"id":"snake_case","name":"name with qty","where":"Albert Heijn or Turkish grocer or AH / Jumbo","price":"~€X.XX","cat":"veg|herbs|protein|carbs|tins|pantry|breakfast"}]} — max 12 ingredients.' }]
+      })
+    });
+    const data = await resp.json();
+    if (data.error || !data.content) return;
+    const txt = data.content.filter(c => c.type === 'text').map(c => c.text).join('');
+    const parsed = JSON.parse(txt.replace(/```json|```/g, '').trim());
+    if (parsed.ingredients && Array.isArray(parsed.ingredients)) {
+      PLAN[idx].d.ingredients = parsed.ingredients;
+      PLAN[idx].d.ingredientsPending = false;
+      savePlan();
+      if (currentTab === 'shopping') render();
+    }
+  } catch(e) {
+    // Silently fail — grocery list will just omit this recipe's ingredients
+    PLAN[idx].d.ingredientsPending = false;
+  }
 }
 
 function cancelSwap() {
@@ -1175,6 +1208,7 @@ function renderShopping() {
     }
   }
 
+  const pendingRecipes = PLAN.filter(d => d.d.ingredientsPending).map(d => d.day);
   let computed;
   try {
     computed = computeShoppingList();
@@ -1221,6 +1255,7 @@ function renderShopping() {
 
   return `<p class="section-title">Grocery list</p>
     <p class="section-sub">Tap items to check them off as you shop. The list updates automatically when you swap a recipe.</p>
+    ${pendingRecipes.length ? '<div class="info-bar" style="background:var(--gold-light);color:var(--gold);border-color:var(--gold-border)">⏳ Fetching ingredients for swapped recipes: ' + pendingRecipes.join(', ') + '. Refresh in a moment.</div>' : ''}
     <div class="${barClass}">
       <span class="price-check-label">${labelText}</span>
       <button class="price-update-btn ${isUpdating ? 'loading' : ''}" onclick="updatePrices()" ${isUpdating ? 'disabled' : ''}>${btnLabel}</button>
