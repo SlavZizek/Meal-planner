@@ -1591,12 +1591,12 @@ async function viewRecipe(idx) {
 }
 
 async function viewRecipeByDinner(dinner) {
-  const rUrl = recipeUrl(dinner);
+  const cacheKey = dinner.name + '|' + (dinner.src || '');
   renderRecipeModal(dinner, { loading: true });
 
   // Check cache first
-  if (recipeCache[rUrl]) {
-    renderRecipeModal(dinner, { loading: false, recipe: recipeCache[rUrl] });
+  if (recipeCache[cacheKey]) {
+    renderRecipeModal(dinner, { loading: false, recipe: recipeCache[cacheKey] });
     return;
   }
 
@@ -1605,6 +1605,8 @@ async function viewRecipeByDinner(dinner) {
     return;
   }
 
+  const srcLabel = dinner.srcLabel || (SOURCE_META[dinner.src] && SOURCE_META[dinner.src].label) || dinner.src || '';
+
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -1612,44 +1614,34 @@ async function viewRecipeByDinner(dinner) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 2000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        system: 'You are a recipe extractor. Fetch the given recipe URL and extract ONLY the ingredients and method steps. Strip all introductions, stories, tips, notes, nutrition info, and commentary. Return ONLY valid JSON, no markdown, no preamble.',
+        system: 'You are a recipe assistant. When asked for a recipe, recall it accurately from your training data and return it in structured JSON. Return ONLY valid JSON, no markdown, no preamble, no commentary.',
         messages: [{
           role: 'user',
-          content: `Fetch this recipe page and extract the ingredients and method: ${rUrl}
-
-Return ONLY this JSON structure:
-{
-  "title": "recipe name",
-  "ingredients": [{"amount": "2 tbsp", "item": "soy sauce"}, ...],
-  "steps": [{"text": "step description"}, ...]
-}
-
-Keep ingredient amounts and units in the amount field. Keep steps concise — just the action, no storytelling. If the page is paywalled or unavailable, return {"error": "unavailable"}.`
+          content: 'Return the recipe for "' + dinner.name + '" by ' + srcLabel + '. Include all ingredients with amounts and all method steps. Return ONLY this JSON: {"title":"string","serves":"string","ingredients":[{"amount":"2 tbsp","item":"soy sauce"}],"steps":[{"text":"step text"}]}. Keep steps concise and action-focused. If you are not confident you know this exact recipe, return {"error":"unknown"}.'
         }]
       })
     });
 
     const data = await resp.json();
     if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-    if (!data.content) throw new Error('No content: ' + JSON.stringify(data).slice(0,200));
+    if (!data.content) throw new Error('No content in response');
     const txt = data.content.filter(c => c.type === 'text').map(c => c.text).join('');
     const parsed = JSON.parse(txt.replace(/```json|```/g, '').trim());
 
     if (parsed.error) {
-      renderRecipeModal(dinner, { loading: false, err: 'This page could not be fetched. Try opening it in Safari.' });
+      renderRecipeModal(dinner, { loading: false, err: 'Recipe not found in memory — tap "Open original" to view it in Safari.' });
       return;
     }
 
-    // Cache it
-    recipeCache[rUrl] = parsed;
+    // Cache by recipe name + source
+    recipeCache[cacheKey] = parsed;
     saveRecipeCache();
     renderRecipeModal(dinner, { loading: false, recipe: parsed });
 
   } catch(e) {
-    const recipeErrMsg = String(e && e.message || '').includes('401')
-      ? 'API key rejected — check Settings (⚙).'
-      : 'Could not load the recipe. Check your connection or open it in Safari.';
+    const msg = String(e && e.message || '');
+    const recipeErrMsg = msg.includes('401') ? 'API key rejected — check Settings (⚙).'
+      : 'Could not load the recipe. Try opening it in Safari using the link above.';
     renderRecipeModal(dinner, { loading: false, err: recipeErrMsg });
   }
 }
