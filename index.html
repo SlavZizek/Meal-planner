@@ -943,7 +943,7 @@ CRITICAL RULES:
       method: 'POST',
       headers: apiHeaders(),
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1200,
         system: sysPrompt,
         messages: [{ role: 'user', content: 'Suggest 3 alternative dinner recipes to replace: "' + cur.d.name + '". Each must deliver at least 20g protein per portion for Peter. Differ meaningfully in flavour/cuisine from each other and from the original. Return ONLY: {"alternatives":[{"name":"string","sourceLabel":"string","sourceKey":"string","url":"string or null","note":"string","proteinG":20,"veganSub":"string or null","ingredients":[{"id":"string","name":"string","where":"string","price":"string","cat":"string"}]}]} where proteinG is an integer.' }]
@@ -1273,7 +1273,7 @@ async function updatePrices() {
       method: 'POST',
       headers: apiHeaders(),
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 4000,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         system: 'You are a Dutch supermarket price checker. Search ah.nl and supermarktscanner.nl for current prices of the specified items at Albert Heijn or Jumbo in the Netherlands. Return ONLY valid JSON with no markdown, no preamble.',
@@ -1366,7 +1366,7 @@ async function testApiKey() {
       method: 'POST',
       headers: apiHeaders(),
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-haiku-4-5',
         max_tokens: 10,
         messages: [{ role: 'user', content: 'Hi' }]
       })
@@ -1526,7 +1526,7 @@ async function viewRecipeByDinner(dinner) {
       method: 'POST',
       headers: apiHeaders(),
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2000,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         system: 'You are a recipe extractor. Fetch the given recipe URL and extract ONLY the ingredients and method steps. Strip all introductions, stories, tips, notes, nutrition info, and commentary. Return ONLY valid JSON, no markdown, no preamble.',
