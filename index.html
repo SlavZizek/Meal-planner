@@ -868,6 +868,26 @@ const SHOPPING = [
   ]},
 ];
 
+// Base items always needed regardless of which dinner recipes are active
+const SHOPPING_BASE = [
+  {id:'courgettes',   name:'Courgettes x2',                       where:'Turkish grocer',        price:'~€2.00', cat:'veg'},
+  {id:'red_onion',    name:'Red onion x1',                         where:'Turkish grocer',        price:'~€0.30', cat:'veg'},
+  {id:'tahini',       name:'Tahini (jar)',                          where:'Turkish grocer',        price:'~€3.50', cat:'pantry'},
+  {id:'miso',         name:'White miso paste (tub)',                where:'AH',                    price:'~€3.50', cat:'pantry'},
+  {id:'olive_oil',    name:'Olive oil (bottle)',                    where:'AH / Jumbo',            price:'~€5.00', cat:'pantry'},
+  {id:'hummus',       name:'Hummus (large tub)',                    where:'Turkish grocer',        price:'~€2.50', cat:'mezze'},
+  {id:'pitta',        name:'Pitta x8',                              where:'Turkish grocer',        price:'~€2.00', cat:'mezze'},
+  {id:'falafel',      name:'Falafel (ready-made)',                  where:'Turkish grocer',        price:'~€2.50', cat:'mezze'},
+  {id:'olives',       name:'Olives (small jar)',                    where:'Turkish grocer',        price:'~€2.00', cat:'mezze'},
+  {id:'oats',         name:'Rolled oats (1kg)',                     where:'AH / Jumbo',            price:'~€1.80', cat:'breakfast'},
+  {id:'blueberries',  name:'Frozen blueberries (AH, 1kg)',          where:'Albert Heijn',          price:'€5.99',  cat:'breakfast'},
+  {id:'peanut_butter',name:'Peanut butter 1kg (AH 100% pindakaas)',where:'Albert Heijn',          price:'~€7.00', cat:'breakfast'},
+  {id:'chia_seeds',   name:'Chia seeds (250g)',                     where:'AH / health food shop', price:'~€3.00', cat:'breakfast'},
+  {id:'bananas',      name:'Bananas x7',                            where:'Turkish grocer',        price:'~€1.75', cat:'breakfast'},
+  {id:'oat_milk',     name:'Oat milk x2 (AH Terra haverdrink 1L)', where:'Albert Heijn',          price:'~€3.00', cat:'breakfast'},
+];
+
+
 const BATCH = [
   { day:'Sunday', who:'Peter', dur:'2–2.5 hrs', tasks:[
     {n:'Lentil bolognese',t:'45 min',d:"Triple portion. Sunday dinner plus Mon and Tue lunches for Peter. Freezes well."},
