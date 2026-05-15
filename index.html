@@ -944,17 +944,46 @@ CRITICAL RULES:
       headers: apiHeaders(),
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 1200,
+        max_tokens: 3000,
         system: sysPrompt,
-        messages: [{ role: 'user', content: 'Suggest 3 alternative dinner recipes to replace: "' + cur.d.name + '". Each must deliver at least 20g protein per portion for Peter. Differ meaningfully in flavour/cuisine from each other and from the original. Return ONLY: {"alternatives":[{"name":"string","sourceLabel":"string","sourceKey":"string","url":"string or null","note":"string","proteinG":20,"veganSub":"string or null","ingredients":[{"id":"string","name":"string","where":"string","price":"string","cat":"string"}]}]} where proteinG is an integer.' }]
+        messages: [{ role: 'user', content: 'Suggest 3 alternative dinner recipes to replace: "' + cur.d.name + '". Each must deliver at least 20g protein per portion for Peter. Differ meaningfully in flavour/cuisine from each other and from the original. Return ONLY valid JSON with no markdown: {"alternatives":[{"name":"string","sourceLabel":"string","sourceKey":"string","url":"string or null","note":"string","proteinG":20,"veganSub":"string or null","ingredients":[{"id":"snake_case_id","name":"name with qty","where":"shop","price":"€X.XX","cat":"veg|herbs|protein|carbs|tins|pantry|breakfast"}]}]} — include only ingredients that must be purchased, max 10 per recipe, proteinG is an integer.' }]
       })
     });
     const data = await resp.json();
     if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
     if (!data.content) throw new Error('No content: ' + JSON.stringify(data).slice(0,200));
     const txt = data.content.filter(c => c.type === 'text').map(c => c.text).join('');
-    const parsed = JSON.parse(txt.replace(/```json|```/g, '').trim());
-    swapState = { idx, loading: false, alts: parsed.alternatives || [], err: null };
+    let cleanTxt = txt.replace(/```json|```/g, '').trim();
+    const jsonStart = cleanTxt.indexOf('{');
+    if (jsonStart > 0) cleanTxt = cleanTxt.slice(jsonStart);
+    let parsed;
+    try {
+      parsed = JSON.parse(cleanTxt);
+    } catch(parseErr) {
+      // Response was truncated — extract complete alternative objects
+      const altIdx = cleanTxt.indexOf('"alternatives"');
+      if (altIdx !== -1) {
+        const arrStart = cleanTxt.indexOf('[', altIdx);
+        if (arrStart !== -1) {
+          let depth = 0, lastClose = arrStart;
+          for (let ci = arrStart; ci < cleanTxt.length; ci++) {
+            if (cleanTxt[ci] === '{') depth++;
+            else if (cleanTxt[ci] === '}') { depth--; if (depth === 0) lastClose = ci + 1; }
+          }
+          try { parsed = { alternatives: JSON.parse('[' + cleanTxt.slice(arrStart + 1, lastClose) + ']') }; }
+          catch(e2) { throw parseErr; }
+        } else { throw parseErr; }
+      } else { throw parseErr; }
+    }
+    // Filter by protein minimum
+    const MIN_PROTEIN_G = 20;
+    const alts = (parsed.alternatives || []).filter(a => (parseInt(a.proteinG) || 0) >= MIN_PROTEIN_G);
+    const filtered = (parsed.alternatives || []).length - alts.length;
+    if (alts.length === 0) {
+      swapState = { idx, loading: false, alts: [], err: 'All suggestions fell below the 20g protein minimum. Try swapping again.' };
+    } else {
+      swapState = { idx, loading: false, alts, filteredCount: filtered, err: null };
+    }
   } catch(e) {
     const errMsg = e && e.message && e.message.includes('401')
       ? 'API key rejected — check it is correct in Settings (⚙).'
