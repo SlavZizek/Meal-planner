@@ -703,7 +703,10 @@ const SOURCE_META = {
 };
 
 // veganSub: if set, recipe is vegetarian but easily made vegan — string describes the sub needed
-let PLAN = JSON.parse(localStorage.getItem('mealplan') || 'null') || [
+const PLAN_VERSION = 4; // increment when PLAN structure changes
+const savedPlan = JSON.parse(localStorage.getItem('mealplan') || 'null');
+const savedPlanVersion = parseInt(localStorage.getItem('mealplanVersion') || '0');
+let PLAN = (savedPlan && savedPlanVersion >= PLAN_VERSION) ? savedPlan : [
   { day:'Monday',    batch:null,
     pL:{t:'Lentil bolognese leftovers + salad',h:true},  gL:{t:'Office',h:false},
     d:{name:'Fennel and dill dal with brown rice', src:'meera',
@@ -879,7 +882,10 @@ let swapState = { idx: null, loading: false, alts: [], err: null };
 let checkedItems = JSON.parse(localStorage.getItem('checked') || '{}');
 let priceUpdateState = { loading: false, changes: null, err: null };
 
-function savePlan() { localStorage.setItem('mealplan', JSON.stringify(PLAN)); }
+function savePlan() {
+  localStorage.setItem('mealplan', JSON.stringify(PLAN));
+  localStorage.setItem('mealplanVersion', String(PLAN_VERSION));
+}
 function saveChecked() { localStorage.setItem('checked', JSON.stringify(checkedItems)); }
 function saveShop() {
   localStorage.setItem('priceOverrides', JSON.stringify(savedPriceOverrides));
@@ -943,7 +949,12 @@ CRITICAL RULES:
     const parsed = JSON.parse(txt.replace(/```json|```/g, '').trim());
     swapState = { idx, loading: false, alts: parsed.alternatives || [], err: null };
   } catch(e) {
-    swapState = { idx, loading: false, alts: [], err: 'Could not load suggestions. Check your internet connection and try again.' };
+    const errMsg = e && e.message && e.message.includes('401')
+      ? 'API key rejected — check it is correct in Settings (⚙).'
+      : e && e.message && e.message.includes('network')
+      ? 'Network error — check your internet connection.'
+      : 'Could not load suggestions (' + (e && e.message ? e.message.slice(0,60) : 'unknown error') + '). Check your API key in Settings (⚙).';
+    swapState = { idx, loading: false, alts: [], err: errMsg };
   }
   render();
 }
@@ -1495,7 +1506,10 @@ Keep ingredient amounts and units in the amount field. Keep steps concise — ju
     renderRecipeModal(dinner, { loading: false, recipe: parsed });
 
   } catch(e) {
-    renderRecipeModal(dinner, { loading: false, err: 'Could not load the recipe. Check your connection or open it in Safari.' });
+    const recipeErrMsg = String(e && e.message || '').includes('401')
+      ? 'API key rejected — check Settings (⚙).'
+      : 'Could not load the recipe. Check your connection or open it in Safari.';
+    renderRecipeModal(dinner, { loading: false, err: recipeErrMsg });
   }
 }
 
@@ -1521,8 +1535,9 @@ function computeShoppingList() {
     const label = day.day.slice(0, 3);
 
     const addIngredients = (ingredients, tag) => {
-      if (!ingredients) return;
+      if (!ingredients || !Array.isArray(ingredients)) return;
       ingredients.forEach(ing => {
+        if (!ing || !ing.id) return;
         const override = savedPriceOverrides[ing.id];
         const price = override ? override.p : ing.price;
         if (map[ing.id]) {
