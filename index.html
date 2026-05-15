@@ -1614,10 +1614,11 @@ async function viewRecipeByDinner(dinner) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 2000,
-        system: 'You are a recipe assistant. When asked for a recipe, recall it accurately from your training data and return it in structured JSON. Return ONLY valid JSON, no markdown, no preamble, no commentary.',
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: 'You are a recipe assistant. Search for the given recipe and return it in structured JSON with all ingredients and method steps. Strip all introductions, tips, stories and commentary. Return ONLY valid JSON, no markdown, no preamble.',
         messages: [{
           role: 'user',
-          content: 'Return the recipe for "' + dinner.name + '" by ' + srcLabel + '. Include all ingredients with amounts and all method steps. Return ONLY this JSON: {"title":"string","serves":"string","ingredients":[{"amount":"2 tbsp","item":"soy sauce"}],"steps":[{"text":"step text"}]}. Keep steps concise and action-focused. If you are not confident you know this exact recipe, return {"error":"unknown"}.'
+          content: 'Search for the recipe "' + dinner.name + '" by ' + srcLabel + ' and return the full recipe. Return ONLY this JSON: {"title":"string","serves":"string","ingredients":[{"amount":"2 tbsp","item":"soy sauce"}],"steps":[{"text":"step text"}]}. Keep steps concise and action-focused.'
         }]
       })
     });
