@@ -1334,16 +1334,21 @@ function openSettings() {
   const el = document.getElementById('settings-modal');
   el.style.display = 'flex';
   el.className = 'modal-overlay';
+  const keyPreview = key ? `${key.slice(0,8)}...${key.slice(-4)} (${key.length} chars)` : 'none';
   el.innerHTML = `<div class="modal-sheet">
     <p class="modal-title">Settings</p>
-    <p class="modal-sub">Add your Anthropic API key to enable recipe swaps and price updates. Get one free at <a href="https://console.anthropic.com" target="_blank" style="color:var(--green)">console.anthropic.com</a> — usage for this app is minimal (a few cents a month).</p>
-    ${key ? '<div class="modal-key-status ok">✓ API key saved</div>' : '<div class="modal-key-status missing">No API key — swaps and price updates are disabled</div>'}
+    <p class="modal-sub">Add your Anthropic API key to enable recipe swaps and price updates. Get one free at <a href="https://console.anthropic.com" target="_blank" style="color:var(--green)">console.anthropic.com</a> — usage is minimal (a few cents a month).</p>
+    ${key
+      ? '<div class="modal-key-status ok">✓ Key saved: ' + keyPreview + '</div>'
+      : '<div class="modal-key-status missing">No API key — swaps and price updates disabled</div>'}
     <div class="modal-label">Anthropic API key</div>
-    <input class="modal-input" id="key-input" type="password" placeholder="sk-ant-..." value="${key}" autocomplete="off" spellcheck="false">
-    <div class="modal-row">
+    <input class="modal-input" id="key-input" type="text" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="none">
+    <p style="font-size:11px;color:var(--ink-light);margin:-8px 0 12px">Paste your key above. It starts with sk-ant-</p>
+    <div class="modal-row" style="margin-bottom:10px">
       <button class="modal-btn secondary" onclick="closeSettings()">Cancel</button>
       <button class="modal-btn primary" onclick="saveKeyFromInput()">Save key</button>
     </div>
+    ${key ? '<button class="modal-btn secondary" style="width:100%" onclick="testApiKey()">Test connection</button>' : ''}
   </div>`;
 }
 
@@ -1353,8 +1358,41 @@ function closeSettings() {
   el.innerHTML = '';
 }
 
+async function testApiKey() {
+  const statusEl = document.querySelector('.modal-key-status');
+  if (statusEl) statusEl.textContent = 'Testing...';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 10,
+        messages: [{ role: 'user', content: 'Hi' }]
+      })
+    });
+    const data = await resp.json();
+    if (data.error) {
+      if (statusEl) { statusEl.className = 'modal-key-status missing'; statusEl.textContent = '✗ Error: ' + data.error.message; }
+    } else {
+      if (statusEl) { statusEl.className = 'modal-key-status ok'; statusEl.textContent = '✓ Connection successful — key works!'; }
+    }
+  } catch(e) {
+    if (statusEl) { statusEl.className = 'modal-key-status missing'; statusEl.textContent = '✗ Network error: ' + e.message; }
+  }
+}
+
 function saveKeyFromInput() {
-  const val = document.getElementById('key-input').value.trim();
+  const raw = document.getElementById('key-input').value;
+  const val = raw.trim();
+  if (!val) {
+    alert('No key entered — paste your Anthropic API key starting with sk-ant-');
+    return;
+  }
+  if (!val.startsWith('sk-')) {
+    alert('That does not look like an Anthropic API key (should start with sk-ant-). Please check and try again.');
+    return;
+  }
   saveApiKey(val);
   closeSettings();
   render();
