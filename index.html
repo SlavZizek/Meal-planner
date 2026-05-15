@@ -706,6 +706,11 @@ const SOURCE_META = {
 const PLAN_VERSION = 4; // increment when PLAN structure changes
 const savedPlan = JSON.parse(localStorage.getItem('mealplan') || 'null');
 const savedPlanVersion = parseInt(localStorage.getItem('mealplanVersion') || '0');
+if (savedPlan && savedPlanVersion < PLAN_VERSION) {
+  localStorage.removeItem('mealplan');
+  localStorage.removeItem('mealplanVersion');
+  console.log('Cleared stale plan (version', savedPlanVersion, '< required', PLAN_VERSION, ')');
+}
 let PLAN = (savedPlan && savedPlanVersion >= PLAN_VERSION) ? savedPlan : [
   { day:'Monday',    batch:null,
     pL:{t:'Lentil bolognese leftovers + salad',h:true},  gL:{t:'Office',h:false},
@@ -945,6 +950,8 @@ CRITICAL RULES:
       })
     });
     const data = await resp.json();
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    if (!data.content) throw new Error('No content: ' + JSON.stringify(data).slice(0,200));
     const txt = data.content.filter(c => c.type === 'text').map(c => c.text).join('');
     const parsed = JSON.parse(txt.replace(/```json|```/g, '').trim());
     swapState = { idx, loading: false, alts: parsed.alternatives || [], err: null };
@@ -1139,7 +1146,15 @@ function renderShopping() {
     }
   }
 
-  const computed = computeShoppingList();
+  let computed;
+  try {
+    computed = computeShoppingList();
+  } catch(e) {
+    return `<p class="section-title">Grocery list</p>
+      <div class="info-bar" style="background:var(--terracotta-light);color:var(--terracotta);border-color:var(--terracotta-border)">
+        Error loading grocery list: ${e.message}. Try closing and reopening the app.
+      </div>`;
+  }
   const anyChecked = Object.values(checkedItems).some(Boolean);
 
   const groups = computed.map(g => {
@@ -1270,6 +1285,8 @@ async function updatePrices() {
     });
 
     const data = await resp.json();
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    if (!data.content) throw new Error('No content: ' + JSON.stringify(data).slice(0,200));
     const txt = data.content.filter(c => c.type === 'text').map(c => c.text).join('');
     const parsed = JSON.parse(txt.replace(/\`\`\`json|\`\`\`/g, '').trim());
 
@@ -1492,6 +1509,8 @@ Keep ingredient amounts and units in the amount field. Keep steps concise — ju
     });
 
     const data = await resp.json();
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    if (!data.content) throw new Error('No content: ' + JSON.stringify(data).slice(0,200));
     const txt = data.content.filter(c => c.type === 'text').map(c => c.text).join('');
     const parsed = JSON.parse(txt.replace(/```json|```/g, '').trim());
 
